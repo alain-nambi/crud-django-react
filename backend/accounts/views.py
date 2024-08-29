@@ -56,10 +56,11 @@ def signup(request):
 
 @api_view(['POST'])
 def login(request):
-    username = request.data['username']
-    password = request.date['password']
+    # username = request.data['username']
+    email = request.data['email']
+    password = request.data['password']
     
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(User, email=email)
     if not user.check_password(password):
         return Response(
             {'user': 'missing user'},
