@@ -39,9 +39,9 @@ utilisateur
 - Docker
 
 
-## Connect Git with SSH keys
+## Links and Usefull Videos 
 https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/GitHub-SSH-Key-Setup-Config-Ubuntu-Linux
-
+https://www.youtube.com/watch?v=llrIu4Qsl7c
 
 ## Colors
 Blue : #1E0B71

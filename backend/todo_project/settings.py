@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tasks', # Add the tasks app for task management  
+    'accounts',
     'rest_framework', # Django REST Framework for building APIs
+    'rest_framework.authtoken',
     'corsheaders', # Enable Cross-Origin Ressource Sharing (CORS)
 ]
 
