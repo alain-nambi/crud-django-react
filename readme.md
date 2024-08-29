@@ -43,4 +43,8 @@ utilisateur
 https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/GitHub-SSH-Key-Setup-Config-Ubuntu-Linux
 
 
+## Colors
+Blue : #1E0B71
+Red : #D20B34
+
 
