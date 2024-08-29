@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 # Create your views here.
 from rest_framework import status
@@ -17,9 +17,12 @@ def signup(request):
     # Validate the serializer data
     if serializer.is_valid():
         validated_data = serializer.validated_data
+        email = validated_data['email']
+        username = validated_data['username']
+        password = validated_data['password']
         
         # Check if email already exists
-        if User.objects.filter(email=validated_data['email']).exists():
+        if User.objects.filter(email=email).exists():
             return Response(
                 {'email': 'This email is already in use.'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -27,9 +30,9 @@ def signup(request):
         
         # Create user with the validated data
         user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password']
+            username=username,
+            email=email,
+            password=password
         )
         
         # Create an authentication token for the user
@@ -37,7 +40,10 @@ def signup(request):
         
         # Return the response with the token and user data
         return Response(
-            {'token': token.key, 'user': serializer.data},
+            {
+                'token': token.key, 
+                'user': serializer.data
+            },
             status=status.HTTP_201_CREATED
         )
     
@@ -46,3 +52,23 @@ def signup(request):
         serializer.errors,
         status=status.HTTP_400_BAD_REQUEST
     )
+
+
+@api_view(['POST'])
+def login(request):
+    username = request.data['username']
+    password = request.date['password']
+    
+    user = get_object_or_404(User, username=username)
+    if not user.check_password(password):
+        return Response(
+            {'user': 'missing user'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    token, created = Token.objects.get_or_create(user=user)
+    serializer = UserSerializer(user)
+    
+    return Response({
+        'token': token.key,
+        'user': serializer.data
+    })

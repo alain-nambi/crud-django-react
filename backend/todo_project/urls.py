@@ -20,5 +20,6 @@ from accounts import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/accounts/signup', views.signup, name='signup')
+    path('api/accounts/signup', views.signup, name='signup'),
+    path('api/accounts/signin', views.login, name='signin')
 ]
