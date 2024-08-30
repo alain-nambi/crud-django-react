@@ -73,3 +73,23 @@ def login(request):
         'token': token.key,
         'user': serializer.data
     })
+    
+@api_view(['POST'])
+def validate_token(request):
+    token_key = request.data.get('token')
+    user = request.data.get('user')
+    
+    print(token_key, user)
+    
+    if not token_key:
+        return Response({"detail": "Token is missing"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # Check if the token exists in the database
+        token = Token.objects.filter(key=token_key, user=user['id']).first()
+        if not token:
+            return Response({"detail": "Invalide token"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"detail": "Token is valide"}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"detail": "Invalid token or error occurred"}, status=status.HTTP_401_UNAUTHORIZED)
