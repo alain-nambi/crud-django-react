@@ -5,36 +5,32 @@ import { Link } from "react-router-dom";
 import "./styles.css";
 import Logo from "../../assets/Logo-Blueline.jpg";
 import { serverUrl } from "../../constants/env";
+import axios from 'axios'
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const resetInputFields = () => {
+    setEmail("")
+    setPassword("")
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    // console.log(event);
 
-    fetch(`${serverUrl}/accounts/signin/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
+    axios.post(`${serverUrl}/accounts/signin/`, {
+      email: email,
+      password: password
+    }).then((response) => {
+      console.log(response);
+
+      resetInputFields()
+    }).catch((error) => {
+      console.log(error)
+
+      resetInputFields()
     })
-      .then((response) => response.json())
-      .then((data) => {
-        const { user, token } = data;
-        console.log(data);
-        if (user && token) {
-          // console.log(user);
-          // console.log(location.href);
-          location.href = "/home";
-        }
-      })
-      .catch((error) => console.log(error));
   };
 
   return (

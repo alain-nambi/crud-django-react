@@ -12,6 +12,7 @@ import { IconLock, IconAt } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/Logo-Blueline.jpg";
 import { serverUrl } from "../../constants/env";
+import axios from 'axios'
 
 const SignUp = () => {
   const [visible, { toggle }] = useDisclosure(false);
@@ -20,25 +21,29 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const resetInputFields = () => {
+    setUsername("")
+    setEmail("")
+    setPassword("")
+    setConfirmPassword("")
+  }
+ 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // console.log(event);
 
-    console.log(`${serverUrl}/accounts/signup/`);
+    axios.post(`${serverUrl}/accounts/signup/`, {
+      username: username,
+      email: email,
+      password: confirmPassword,
+    }).then((response) => {
+      console.log(response);
+      
+      resetInputFields()
+    }).catch((error) => {
+      console.log(error);
 
-    fetch(`${serverUrl}/accounts/signup/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: username,
-        email: email,
-        password: confirmPassword
-      })
-    }).then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.log(error))
+      resetInputFields()
+    })
   };
 
   return (
