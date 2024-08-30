@@ -22,18 +22,18 @@
     padding: 10px 20px;
     border-radius: 5px;
     font-weight: 600;
-    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .logout-button:hover {
-    background-color: #a50a29;
+    background-color: #d20b33ad;
     transform: scale(1.05);
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-25px);
     }
 
     to {
