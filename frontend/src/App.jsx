@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import SignUp from "./components/user/SignUp.jsx";
 import SignIn from "./components/user/SignIn.jsx";
 import Home from "./components/home/Home.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
 
 export default function App() {
   return (
@@ -14,8 +15,15 @@ export default function App() {
           <Routes>
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route
+              path="/home"
+              element={
+                <PrivateRoute>
+                  <Home />
+                </PrivateRoute>
+              }
+            />
             <Route path="*" element={<SignIn />} />  {/* Redirect to SignIn by default */}
-            <Route path="/home" element={<Home />} />
           </Routes>
         </div>
       </Router>

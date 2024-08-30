@@ -6,24 +6,33 @@ import "./styles.css";
 import Logo from "../../assets/Logo-Blueline.jpg";
 import { serverUrl } from "../../constants/env";
 import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
 
   const resetInputFields = () => {
     setEmail("")
     setPassword("")
   }
 
-  const handleSubmit = (event) => {
+  const handleSignIn = (event) => {
     event.preventDefault();
 
     axios.post(`${serverUrl}/accounts/signin/`, {
       email: email,
       password: password
     }).then((response) => {
-      console.log(response);
+      const { token, user } = response.data
+
+      // console.log(user);
+      
+      localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(user))
+      
+      navigate('/home')
 
       resetInputFields()
     }).catch((error) => {
@@ -35,7 +44,7 @@ const SignIn = () => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSignIn}>
         <div className="flex flex-col gap-4 w-auto p-8 bg-white shadow-lg rounded-md">
           <Image radius="md" src={Logo} w={100} h={100} />
 
