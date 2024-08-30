@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { TextInput, PasswordInput, Text, Button, Image } from "@mantine/core";
 import { IconLock, IconAt } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
@@ -7,11 +7,13 @@ import Logo from "../../assets/Logo-Blueline.jpg";
 import { serverUrl } from "../../constants/env";
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../../context/AuthContext"
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate()
+  const { login } = useContext(AuthContext)
 
   const resetInputFields = () => {
     setEmail("")
@@ -27,12 +29,13 @@ const SignIn = () => {
     }).then((response) => {
       const { token, user } = response.data
 
-      // console.log(user);
+      // console.log("TOKEN & USER");
+      // console.log(token, user);
+
+      login(token, user)
       
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
-      
-      navigate('/home')
+      console.log('Navigating to /home');
+      navigate('/home');
 
       resetInputFields()
     }).catch((error) => {
