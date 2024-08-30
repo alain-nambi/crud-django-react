@@ -89,7 +89,7 @@ def validate_token(request):
         token = Token.objects.filter(key=token_key, user=user['id']).first()
         if not token:
             return Response({"detail": "Invalide token"}, status=status.HTTP_401_UNAUTHORIZED)
-        return Response({"detail": "Token is valide"}, status=status.HTTP_200_OK)
+        return Response({"detail": "Token is valid"}, status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response({"detail": "Invalid token or error occurred"}, status=status.HTTP_401_UNAUTHORIZED)
