@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
-import { Button } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import React, { useContext } from "react";
+import { Button } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
-import './styles.css'; // Import the CSS file for smooth styling
+import "./styles.css"; // Import the CSS file for smooth styling
+import { TaskCreation, TaskList } from "../tasks/TaskList";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -11,13 +12,17 @@ const Home = () => {
   const handleSignOff = (e) => {
     e.preventDefault();
     logout();
-    navigate('/signin');
+    navigate("/signin");
   };
 
   return (
-    <div className="home-container">
-      <p className="welcome-text">Bienvenue dans la page d'accueil</p>
-      <Button className="logout-button" onClick={handleSignOff}>Déconnecter</Button>
+    <div>
+      <TaskList />
+      <div className="home-container">
+        <Button className="logout-button" onClick={handleSignOff}>
+          Déconnecter
+        </Button>
+      </div>
     </div>
   );
 };

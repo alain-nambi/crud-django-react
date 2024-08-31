@@ -20,7 +20,6 @@ export default function App() {
     <MantineProvider>
       <AuthProvider>
         <Router>
-          <div className="flex items-center justify-center h-screen">
             <Routes>
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
@@ -36,7 +35,6 @@ export default function App() {
               <Route path="*" element={<SignIn />} />{" "}
               {/* Redirect to SignIn by default */}
             </Routes>
-          </div>
         </Router>
       </AuthProvider>
     </MantineProvider>
