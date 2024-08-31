@@ -7,14 +7,20 @@ import {
   Textarea,
   Badge,
   Group,
+  Modal,
 } from "@mantine/core";
 import axios from "axios";
 import { serverUrl } from "../../constants/env";
 import "./styles.css"; // Import the CSS file
+import { useDisclosure } from "@mantine/hooks";
 
+// TaskCreation Component
 export const TaskCreation = ({ refreshTasks }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  // Used in modals
+  const [opened, { open, close }] = useDisclosure(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -31,6 +37,7 @@ export const TaskCreation = ({ refreshTasks }) => {
         refreshTasks(); // Refresh task list after creating a new task
         setTitle("");
         setDescription("");
+        close(); // Close the modal
       })
       .catch((error) => {
         console.log(error);
@@ -38,35 +45,51 @@ export const TaskCreation = ({ refreshTasks }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleCreateTask()
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleCreateTask();
     }
-  } 
+  };
 
   return (
-    <div className="flex flex-col gap-4 p-4 w-96">
-      <TextInput
-        label="Nom de la tâche"
-        placeholder="ex: Créer un bouton de sauvegarde"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      <Textarea
-        label="Description de la tâche"
-        placeholder="ex: Couleur du bouton en vert"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      <Button fullWidth onClick={handleCreateTask}>
+    <div>
+      <Modal opened={opened} onClose={close} title="Création d'une tâche">
+        <div className="flex flex-col gap-4 p-4 w-96">
+          <TextInput
+            label="Nom de la tâche"
+            description="Saisissez le nom de la tâche..."
+            placeholder="ex: Créer un bouton de sauvegarde"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={handleKeyDown}
+            required
+          />
+          <Textarea
+            label="Description de la tâche"
+            description="Saisissez la description de la tâche..."
+            placeholder="ex: Couleur du bouton en vert"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onKeyDown={handleKeyDown}
+            required
+          />
+          <Button color="blue" fullWidth onClick={handleCreateTask}>
+            Création de la tâche
+          </Button>
+        </div>
+      </Modal>
+
+      <Button
+        onClick={open}
+        className="mb-6"
+      >
         Créer une tâche
       </Button>
     </div>
   );
 };
 
+// TaskList Component
 export const TaskList = () => {
   const [tasks, setTasks] = useState([]);
 
@@ -75,7 +98,8 @@ export const TaskList = () => {
       .get(`${serverUrl}/tasks/list`)
       .then((response) => {
         console.log(response);
-        setTasks(response.data);
+        const sortedTasks = response.data.sort((a, b) => a.title.localeCompare(b.title));
+        setTasks(sortedTasks);
       })
       .catch((error) => {
         console.log(error);
