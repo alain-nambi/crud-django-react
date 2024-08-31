@@ -16,11 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from accounts import views
+from accounts.views import signup, login, validate_token
+from tasks.views import create_task, get_tasks, delete_task, update_task
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/accounts/signup/', views.signup, name='signup'),
-    path('api/accounts/signin/', views.login, name='signin'),
-    path('api/accounts/validate-token', views.validate_token, name='validate-token')
+    path('api/accounts/signup/', signup, name='signup'),
+    path('api/accounts/signin/', login, name='signin'),
+    path('api/accounts/validate-token', validate_token, name='validate-token'),
+    path('api/tasks/create', create_task, name='create-task'),
+    path('api/tasks/list', get_tasks, name='task-list'),
+    path('api/tasks/update', update_task, name='update-task'),
+    path('api/tasks/delete', delete_task, name='delete-task'),
 ]
