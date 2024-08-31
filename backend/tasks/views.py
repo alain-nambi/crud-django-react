@@ -21,13 +21,14 @@ def create_task(request):
         
         title = validated_data['title']
         description = validated_data['description']
-        status_id = validated_data['status']
         user_id = validated_data['user']
+        
+        status_instance = Status.objects.get(pk=1)
         
         Task.objects.create(
             title=title,
             description=description,
-            status=status_id,
+            status=status_instance,
             user=user_id
         )
         
@@ -88,6 +89,6 @@ def delete_task(request):
 @api_view(['GET'])
 def get_tasks(request):
     tasks = Task.objects.all()
-    return Response(
-        {'tasks' : tasks}
-    )
+    serializer = TaskSerializer(tasks, many=True)
+    
+    return Response(serializer.data)
