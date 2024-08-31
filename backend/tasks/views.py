@@ -44,32 +44,30 @@ def create_task(request):
     
 @api_view(['PUT'])
 def update_task(request):
-    serializer = TaskSerializer(data=request.data)
-    if serializer.is_valid():
-        validated_data = serializer.validated_data
-        
-        task_id = request.data.get('task_id')
-        user_id = request.data.get('user_id')
-        title = validated_data['title']
-        description = validated_data['description']
-        status_id = validated_data['status']
-        
-        task_instance = get_object_or_404(Task, id=int(task_id), user=int(user_id))
-        if task_instance:
-            task_instance.title = title
-            task_instance.description = description
-            task_instance.status = status_id
-            task_instance.save()
+    task_id = request.data.get('task_id')
+    user_id = request.data.get('user_id')
+    title =  request.data.get('title')
+    description =  request.data.get('description')
+    status_id =  request.data.get('status')
+    
+    task_instance = get_object_or_404(Task, id=int(task_id), user=int(user_id))
+    status_instance = Status.objects.get(pk=int(status_id))
+    
+    if task_instance:
+        task_instance.title = title
+        task_instance.description = description
+        task_instance.status = status_instance
+        task_instance.save()
 
-            return Response(
-                serializer.data,
-                status=status.HTTP_200_OK
-            )
-        
         return Response(
-            serializer.errors,
-            status=status.HTTP_401_UNAUTHORIZED
+            {'message': f'{task_instance.title} a été mis à jour avec succès'},
+            status=status.HTTP_200_OK
         )
+    
+    return Response(
+       {'message': f'{task_instance.title} a été mis à jour avec succès'},
+        status=status.HTTP_401_UNAUTHORIZED
+    )
         
 @api_view(['DELETE'])
 def delete_task(request):
@@ -84,7 +82,10 @@ def delete_task(request):
             {'message': f'La tâche {task_instance.title} a été supprimé avec succès'},
             status=status.HTTP_204_NO_CONTENT
         )
-            
+    return Response(
+        {'message': f'Une erreur est survenue sur la suppression de la tâche {task_instance.title}'},
+        status=status.HTTP_400_BAD_REQUEST
+    )       
 
 @api_view(['GET'])
 def get_tasks(request):

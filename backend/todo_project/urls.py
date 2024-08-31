@@ -24,8 +24,8 @@ urlpatterns = [
     path('api/accounts/signup/', signup, name='signup'),
     path('api/accounts/signin/', login, name='signin'),
     path('api/accounts/validate-token', validate_token, name='validate-token'),
-    path('api/tasks/create', create_task, name='create-task'),
-    path('api/tasks/list', get_tasks, name='task-list'),
-    path('api/tasks/update', update_task, name='update-task'),
-    path('api/tasks/delete', delete_task, name='delete-task'),
+    path('api/tasks/create/', create_task, name='create-task'),
+    path('api/tasks/list/', get_tasks, name='task-list'),
+    path('api/tasks/update/', update_task, name='update-task'),
+    path('api/tasks/delete/', delete_task, name='delete-task'),
 ]
