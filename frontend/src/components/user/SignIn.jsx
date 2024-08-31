@@ -40,7 +40,7 @@ const SignIn = () => {
             setLoading(false); // Stop loading animation after 2 seconds
             navigate("/home");
             resetInputFields();
-          }, 1200); // Delay navigation by 2 seconds
+          }, 1000); // Delay navigation by 1 seconds
         }
       })
       .catch((error) => {
