@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import Logo from "../../assets/Logo-Blueline.jpg";
 import { serverUrl } from "../../constants/env";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "../effect/Loader";
 
@@ -79,7 +79,7 @@ const SignUp = () => {
           }, 2000);
         }
 
-        resetInputFields();
+        // resetInputFields();
       })
       .catch((error) => {
         console.log(error);
@@ -188,7 +188,6 @@ const SignUp = () => {
           </div>
         </form>
       )}
-      <ToastContainer />
     </div>
   );
 };

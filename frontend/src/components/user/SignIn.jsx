@@ -15,9 +15,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import { Loader } from "../effect/Loader";
-import { toast, ToastContainer } from "react-toastify";
-
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -42,7 +40,7 @@ const SignIn = () => {
       })
       .then((response) => {
         if (response.status === 200) {
-          const { token, user } = response.data;
+          const { token, user } = response.data;-
 
           login(token, user);
 
@@ -57,7 +55,7 @@ const SignIn = () => {
       .catch((error) => {
         console.log(error);
 
-        toast.error(`L'utilisateur  ou le mot de passe est incorrect`);
+        toast.error(`L'adresse email ou le mot de passe n'est pas valide`);
 
         setLoading(false); // Stop loading animation in case of error
         resetInputFields();
@@ -66,7 +64,6 @@ const SignIn = () => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <ToastContainer />
       {loading ? (
         <Loader /> // Display loading animation
       ) : (

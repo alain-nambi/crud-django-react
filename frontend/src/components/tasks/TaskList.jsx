@@ -28,7 +28,7 @@ import {
 } from "@tabler/icons-react";
 
 import "@mantine/dates/styles.css";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 // TaskCreation Component
 export const TaskCreation = ({ refreshTasks }) => {
@@ -42,9 +42,14 @@ export const TaskCreation = ({ refreshTasks }) => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleCreateTask = () => {
-    if (title.trim() === "" || description.trim() === "" || !dueDate || !estimatedTime) {
-      toast.error('Veuillez remplir toutes les champs requis')
-    };
+    if (
+      title.trim() === "" ||
+      description.trim() === "" ||
+      !dueDate ||
+      !estimatedTime
+    ) {
+      toast.error("Veuillez remplir toutes les champs requis");
+    }
     axios
       .post(`${serverUrl}/tasks/create/`, {
         title,
@@ -84,7 +89,7 @@ export const TaskCreation = ({ refreshTasks }) => {
 
   return (
     <div>
-      <Modal opened={opened} onClose={close} title="Création d'une tâche">
+      <Modal opened={opened} onClose={close} title="Création d'une tâche" centered>
         <div className="flex flex-col gap-4 p-4 w-96">
           <TextInput
             label="Nom de la tâche"
@@ -344,205 +349,214 @@ export const TaskList = () => {
   };
 
   return (
-    <div className="task-list-container">
-      <TaskCreation refreshTasks={fetchTasks} />
+    <>
+      <div className="task-list-container">
+        <TaskCreation refreshTasks={fetchTasks} />
 
-      <Text fw={600} mb={"md"} size="1.25rem">
-        Liste des fonctionnalités
-      </Text>
+        <Text fw={600} mb={"md"} size="1.25rem">
+          Liste des fonctionnalités
+        </Text>
 
-      <div className="flex gap-4 items-center mb-6">
-        <TextInput
-          label="Recherche"
-          description="Faite une recherche par rapport au nom ou description de la tâche"
-          placeholder="Saisissez le nom de tâche"
-          leftSection={<IconSearch size={18} />}
-          onChange={handleSearchTask}
-          value={searchQuery} // Bind value to searchQuery state
-        />
-
-        <Select
-          label="Filtre par status"
-          description="Faites une filtre par rapport aux status"
-          placeholder="Sélectionner le status"
-          data={statusOptions}
-          clearable
-          value={selectedStatus}
-          onChange={handleStatusChange}
-          searchable
-        />
-
-        <Select
-          label="Trier de A à Z"
-          description="Faites une tri par rapport à l'ordre"
-          placeholder="Sélectionner un ordre"
-          data={[
-            { value: "A-Z", label: "De A à Z" },
-            { value: "Z-A", label: "De Z à A" },
-          ]}
-          clearable
-          value={sortOrder}
-          onChange={handleSortOrderChange}
-          searchable
-        />
-      </div>
-
-      <Text fw={600} mb={"md"} size="1.25rem">
-        {tasks.length > 0
-          ? "Liste des tâches"
-          : "Veuillez créer une tâche pour voir la liste des tâches"}
-      </Text>
-
-      <div className="task-list-grid">
-        {tasks.map((task, index) => (
-          <HoverCard withArrow key={index}>
-            <HoverCard.Target>
-              <Card
-                className="task-card"
-                shadow="sm"
-                padding="md"
-                radius="md"
-                withBorder
-                key={index}
-                style={{ cursor: "pointer" }}
-                onClick={() => handleEditClick(task)}
-              >
-                <Group className="flex flex-col">
-                  <Text fw={500}>{task.title}</Text>
-                  <Badge color={setColor(task.status.name)}>
-                    {setStatus(task.status.name)}
-                  </Badge>
-
-                  <Badge color={"red"} variant="dot">
-                    {formatDateToFrench(task.due_date)}
-                  </Badge>
-                </Group>
-              </Card>
-            </HoverCard.Target>
-            <HoverCard.Dropdown>
-              <Group>
-                <div className="flex flex-col gap-4 p-4 w-96">
-                  <TextInput
-                    label="Nom de la tâche"
-                    value={task.title}
-                    disabled
-                  />
-
-                  <Textarea
-                    label="Description de la tâche"
-                    value={task.description}
-                    disabled
-                  />
-
-                  <div className="flex gap-6 justify-between">
-                    <Text size="sm" fw={500}>
-                      Status de la tâche
-                    </Text>
-
-                    <Badge color={setColor(task.status.name)}>
-                      {setStatus(task.status.name)}
-                    </Badge>
-                  </div>
-
-                  <div className="flex gap-6 justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <IconCalendar size={23} />
-                      <Text size="sm" fw={500}>
-                        Durée estimée (en heures)
-                      </Text>
-                    </div>
-
-                    <Badge color="green" variant="dot">
-                      <Text size="xs">{task.estimated_time}</Text>
-                    </Badge>
-                  </div>
-
-                  <div className="flex gap-6 justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <IconCalendarStats size={23} />
-                      <Text size="sm" fw={500}>
-                        {"Date d'échéance estimée"}
-                      </Text>
-                    </div>
-
-                    <Badge color="red" variant="outline">
-                      <Text size="xs">{formatDateToFrench(task.due_date)}</Text>
-                    </Badge>
-                  </div>
-                </div>
-              </Group>
-            </HoverCard.Dropdown>
-          </HoverCard>
-        ))}
-      </div>
-
-      {/* Edit Task Modal */}
-      <Modal opened={openedEdit} onClose={closeEdit} title="Modifier la tâche">
-        <div className="flex flex-col gap-4 p-4 w-96">
+        <div className="flex gap-4 items-center mb-6">
           <TextInput
-            label="Nom de la tâche"
-            description="Saisissez le nom de la tâche..."
-            placeholder="ex: Créer un bouton de sauvegarde"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-
-          <Textarea
-            label="Description de la tâche"
-            description="Saisissez la description de la tâche..."
-            placeholder="ex: Couleur du bouton en vert"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
+            label="Recherche"
+            description="Faite une recherche par rapport au nom ou description de la tâche"
+            placeholder="Saisissez le nom de tâche"
+            leftSection={<IconSearch size={18} />}
+            onChange={handleSearchTask}
+            value={searchQuery} // Bind value to searchQuery state
           />
 
           <Select
-            label="Modifier le statut"
-            placeholder="Sélectionner le statut"
+            label="Filtre par status"
+            description="Faites une filtre par rapport aux status"
+            placeholder="Sélectionner le status"
             data={statusOptions}
-            value={statusName} // Use the statusName state here
-            onChange={(value) => setStatusName(value)} // Update statusName when a status is selected
+            clearable
+            value={selectedStatus}
+            onChange={handleStatusChange}
             searchable
           />
 
-          <NumberInput
-            decimalSeparator=","
-            label="Temps estimé (en heure)"
-            description="Saisissez le temps estimé"
-            placeholder="ex: 2,5"
-            defaultValue={1}
-            value={estimatedTime}
-            onChange={(value) => setEstimatedTime(value)}
-            precision={2}
-            step={0.5}
-            required
+          <Select
+            label="Trier de A à Z"
+            description="Faites une tri par rapport à l'ordre"
+            placeholder="Sélectionner un ordre"
+            data={[
+              { value: "A-Z", label: "De A à Z" },
+              { value: "Z-A", label: "De Z à A" },
+            ]}
+            clearable
+            value={sortOrder}
+            onChange={handleSortOrderChange}
+            searchable
           />
-
-          <DateInput
-            label="Date d'échéance estimé"
-            description="Saisissez la date d'échéance estimée"
-            placeholder="ex: 23 September 2024"
-            value={dueDate !== null && new Date(dueDate)} // This should be a Date object or null
-            onChange={(value) => setDueDate(value)} // Make sure this value is being handled correctly
-            required
-          />
-
-          <div className="flex gap-2">
-            <Button
-              color="red"
-              onClick={() => handleDeleteTask(selectedTask.id)} // Pass the task ID to handleDeleteTask
-              title={`Supprimer la tâche ${title}`}
-            >
-              <IconTrash />
-            </Button>
-
-            <Button color="blue" fullWidth onClick={handleUpdateTask}>
-              Mettre à jour la tâche
-            </Button>
-          </div>
         </div>
-      </Modal>
-    </div>
+
+        <Text fw={600} mb={"md"} size="1.25rem">
+          {tasks.length > 0
+            ? "Liste des tâches"
+            : "Veuillez créer une tâche pour voir la liste des tâches"}
+        </Text>
+
+        <div className="task-list-grid">
+          {tasks.map((task, index) => (
+            <HoverCard withArrow key={index} openDelay={50} closeDelay={0}>
+              <HoverCard.Target>
+                <Card
+                  className="task-card"
+                  shadow="sm"
+                  padding="md"
+                  radius="md"
+                  withBorder
+                  key={index}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleEditClick(task)}
+                >
+                  <Group className="flex flex-col">
+                    <Text fw={500}>{task.title}</Text>
+                    <Badge color={setColor(task.status.name)}>
+                      {setStatus(task.status.name)}
+                    </Badge>
+
+                    <Badge color={"red"} variant="dot">
+                      {formatDateToFrench(task.due_date)}
+                    </Badge>
+                  </Group>
+                </Card>
+              </HoverCard.Target>
+              <HoverCard.Dropdown>
+                <Group>
+                  <div className="flex flex-col gap-4 p-4 w-96">
+                    <TextInput
+                      label="Nom de la tâche"
+                      value={task.title}
+                      disabled
+                    />
+
+                    <Textarea
+                      label="Description de la tâche"
+                      value={task.description}
+                      disabled
+                    />
+
+                    <div className="flex gap-6 justify-between">
+                      <Text size="sm" fw={500}>
+                        Status de la tâche
+                      </Text>
+
+                      <Badge color={setColor(task.status.name)}>
+                        {setStatus(task.status.name)}
+                      </Badge>
+                    </div>
+
+                    <div className="flex gap-6 justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <IconCalendar size={23} />
+                        <Text size="sm" fw={500}>
+                          Durée estimée (en heures)
+                        </Text>
+                      </div>
+
+                      <Badge color="green" variant="dot">
+                        <Text size="xs">{task.estimated_time}</Text>
+                      </Badge>
+                    </div>
+
+                    <div className="flex gap-6 justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <IconCalendarStats size={23} />
+                        <Text size="sm" fw={500}>
+                          {"Date d'échéance estimée"}
+                        </Text>
+                      </div>
+
+                      <Badge color="red" variant="outline">
+                        <Text size="xs">
+                          {formatDateToFrench(task.due_date)}
+                        </Text>
+                      </Badge>
+                    </div>
+                  </div>
+                </Group>
+              </HoverCard.Dropdown>
+            </HoverCard>
+          ))}
+        </div>
+
+        {/* Edit Task Modal */}
+        <Modal
+          opened={openedEdit}
+          onClose={closeEdit}
+          title="Modifier la tâche"
+          centered
+        >
+          <div className="flex flex-col gap-4 p-4 w-96">
+            <TextInput
+              label="Nom de la tâche"
+              description="Saisissez le nom de la tâche..."
+              placeholder="ex: Créer un bouton de sauvegarde"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+
+            <Textarea
+              label="Description de la tâche"
+              description="Saisissez la description de la tâche..."
+              placeholder="ex: Couleur du bouton en vert"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+
+            <Select
+              label="Modifier le statut"
+              placeholder="Sélectionner le statut"
+              data={statusOptions}
+              value={statusName} // Use the statusName state here
+              onChange={(value) => setStatusName(value)} // Update statusName when a status is selected
+              searchable
+            />
+
+            <NumberInput
+              decimalSeparator=","
+              label="Temps estimé (en heure)"
+              description="Saisissez le temps estimé"
+              placeholder="ex: 2,5"
+              defaultValue={1}
+              value={estimatedTime}
+              onChange={(value) => setEstimatedTime(value)}
+              precision={2}
+              step={0.5}
+              required
+            />
+
+            <DateInput
+              label="Date d'échéance estimé"
+              description="Saisissez la date d'échéance estimée"
+              placeholder="ex: 23 September 2024"
+              value={dueDate !== null && new Date(dueDate)} // This should be a Date object or null
+              onChange={(value) => setDueDate(value)} // Make sure this value is being handled correctly
+              required
+            />
+
+            <div className="flex gap-2">
+              <Button
+                color="red"
+                onClick={() => handleDeleteTask(selectedTask.id)} // Pass the task ID to handleDeleteTask
+                title={`Supprimer la tâche ${title}`}
+              >
+                <IconTrash />
+              </Button>
+
+              <Button color="blue" fullWidth onClick={handleUpdateTask}>
+                Mettre à jour la tâche
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      </div>
+    </>
   );
 };

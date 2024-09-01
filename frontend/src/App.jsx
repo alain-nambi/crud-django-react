@@ -13,15 +13,12 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useContext } from "react";
 import AuthContext from "./context/AuthContext.jsx";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   return (
     <MantineProvider>
       <AuthProvider>
         <Router>
-          <ToastContainer />
           <Routes>
             <Route
               path="/signin"
