@@ -14,6 +14,10 @@
 }
 
 .logout-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 2rem;
     background-color: #D20B34;
     color: white;
     padding: 10px 20px;

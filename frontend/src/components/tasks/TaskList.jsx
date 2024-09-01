@@ -142,29 +142,67 @@ export const TaskList = () => {
   const [dueDate, setDueDate] = useState(null);
   const { auth } = useContext(AuthContext);
 
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+
+  const handleStatusChange = (value) => {
+    setSelectedStatus(value);
+  };
+
+  const handleSortOrderChange = (value) => {
+    setSortOrder(value);
+  };
+
   const [openedEdit, { open: openEdit, close: closeEdit }] =
     useDisclosure(false);
 
   // console.log(auth);
 
+  // Fetch tasks with URL parameters
   const fetchTasks = () => {
+    const params = new URLSearchParams({
+      user_id: auth.user.id,
+      status: selectedStatus,
+      sort_order: sortOrder,
+      search_query: searchQuery,
+    });
+
     axios
-      .get(`${serverUrl}/tasks/list/`, { params: { user_id: auth.user.id } })
+      .get(`${serverUrl}/tasks/list/?${params.toString()}`)
       .then((response) => {
-        console.log(response);
-        const sortedTasks = response.data.sort((a, b) =>
-          a.title.localeCompare(b.title)
-        );
-        setTasks(sortedTasks);
+        setTasks(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
+  // Update URL parameters
+  const updateURLParams = () => {
+    const params = new URLSearchParams({
+      status: selectedStatus,
+      sort_order: sortOrder,
+      search_query: searchQuery,
+    });
+
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  };
+
+  // Read URL parameters on component mount
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setSelectedStatus(params.get("status") || "");
+    setSortOrder(params.get("sort_order") || "");
+    setSearchQuery(params.get("search_query") || "");
+
     fetchTasks();
   }, []);
+
+  // Fetch tasks when filters or search query change
+  useEffect(() => {
+    updateURLParams();
+    fetchTasks();
+  }, [selectedStatus, sortOrder, searchQuery]);
 
   const handleEditClick = (task) => {
     setSelectedTask(task);
@@ -287,16 +325,48 @@ export const TaskList = () => {
     <div className="task-list-container">
       <TaskCreation refreshTasks={fetchTasks} />
 
-      <TextInput
-        className="mb-6"
-        placeholder="Rechercher par le nom de la tâche / par description"
-        leftSection={<IconSearch size={18} />}
-        onChange={handleSearchTask}
-        value={searchQuery} // Bind value to searchQuery state
-      />
+      <Text fw={600} mb={"md"} size="1.25rem">
+        Liste des fonctionnalités
+      </Text>
+
+      <div className="flex gap-4 items-center mb-6">
+        <TextInput
+          label="Recherche"
+          description="Faite une recherche par rapport au nom ou description de la tâche"
+          placeholder="Saisissez le nom de tâche"
+          leftSection={<IconSearch size={18} />}
+          onChange={handleSearchTask}
+          value={searchQuery} // Bind value to searchQuery state
+        />
+
+        <Select
+          label="Filtre par status"
+          description="Faites une filtre par rapport aux status"
+          placeholder="Sélectionner le status"
+          data={statusOptions}
+          clearable
+          value={selectedStatus}
+          onChange={handleStatusChange}
+          searchable
+        />
+
+        <Select
+          label="Trier de A à Z"
+          description="Faites une tri par rapport à l'ordre"
+          placeholder="Sélectionner un ordre"
+          data={[
+            { value: "A-Z", label: "De A à Z" },
+            { value: "Z-A", label: "De Z à A" },
+          ]}
+          clearable
+          value={sortOrder}
+          onChange={handleSortOrderChange}
+          searchable
+        />
+      </div>
 
       <Text fw={600} mb={"md"} size="1.25rem">
-        Liste des tâches
+        {tasks.length > 0 ? 'Liste des tâches' : 'Veuillez créer une tâche pour voir la liste des tâches'}
       </Text>
 
       <div className="task-list-grid">
@@ -317,6 +387,10 @@ export const TaskList = () => {
                   <Text fw={500}>{task.title}</Text>
                   <Badge color={setColor(task.status.name)}>
                     {setStatus(task.status.name)}
+                  </Badge>
+
+                  <Badge color={"red"} variant="dot">
+                    {formatDateToFrench(task.due_date)}
                   </Badge>
                 </Group>
               </Card>
@@ -429,7 +503,6 @@ export const TaskList = () => {
             onChange={(value) => setDueDate(value)} // Make sure this value is being handled correctly
             required
           />
-
 
           <div className="flex gap-2">
             <Button

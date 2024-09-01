@@ -107,10 +107,25 @@ def delete_task(request):
 @api_view(['GET'])
 def get_tasks(request):
     user_id = request.query_params.get('user_id')
+    status = request.query_params.get('status', None)
+    sort_order = request.query_params.get('sort_order', None)
+    search_query = request.query_params.get('search_query', '')
+
+    tasks = Task.objects.filter(user_id=user_id)
+
+    if status and status != 'null':
+        tasks = tasks.filter(status__name=status)
+
+    if search_query:
+        tasks = tasks.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
+
+    if sort_order and sort_order != 'null':
+        if sort_order == "A-Z":
+            tasks = tasks.order_by('title')
+        elif sort_order == "Z-A":
+            tasks = tasks.order_by('-title')
     
-    tasks = Task.objects.filter(user_id=user_id).all()
     serializer = TaskSerializer(tasks, many=True)
-    
     return Response(serializer.data)
 
 @api_view(['POST'])
