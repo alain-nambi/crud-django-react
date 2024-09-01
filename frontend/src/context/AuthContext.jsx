@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Loader />;
+        <Loader />
       </div>
     ); // Display the loader while loading
   }

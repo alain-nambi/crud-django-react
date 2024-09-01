@@ -3,7 +3,7 @@ import { Button, TextInput } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import "./styles.css"; // Import the CSS file for smooth styling
-import { TaskCreation, TaskList } from "../tasks/TaskList";
+import { TaskList } from "../tasks/TaskList";
 import {
   IconLock,
   IconAt,

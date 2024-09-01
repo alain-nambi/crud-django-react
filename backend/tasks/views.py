@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.shortcuts import render
 
 from rest_framework import status
@@ -23,6 +24,8 @@ def create_task(request):
         title = validated_data['title']
         description = validated_data['description']
         user_id = validated_data['user']
+        estimated_time =  validated_data['estimated_time']
+        due_date = validated_data['due_date']
         
         status_instance = Status.objects.get(pk=1)
         
@@ -30,7 +33,9 @@ def create_task(request):
             title=title,
             description=description,
             status=status_instance,
-            user=user_id
+            user=user_id,
+            estimated_time=estimated_time,
+            due_date=due_date
         )
         
         return Response(
@@ -51,6 +56,15 @@ def update_task(request):
     description =  request.data.get('description')
     status_name =  request.data.get('status_name')
     
+    estimated_time =  request.data.get('estimated_time')
+    # Convert seconds to interval
+    estimated_time_interval = str(timedelta(seconds=int(estimated_time)))
+    
+    due_date = request.data.get('due_date')
+    
+    print(estimated_time_interval)
+    print(due_date)
+    
     task_instance = get_object_or_404(Task, id=int(task_id), user=int(user_id))
     status_instance = Status.objects.filter(name=status_name).first()
     
@@ -58,6 +72,8 @@ def update_task(request):
         task_instance.title = title
         task_instance.description = description
         task_instance.status = status_instance
+        task_instance.estimated_time = estimated_time_interval
+        task_instance.due_date = due_date
         task_instance.save()
 
         return Response(

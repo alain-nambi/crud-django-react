@@ -14,6 +14,8 @@ class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='users', default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    estimated_time = models.DurationField(blank=True, null=True)  # Assuming this is optional
+    due_date = models.DateTimeField(default=None)
 
     def __str__(self):
         return self.title

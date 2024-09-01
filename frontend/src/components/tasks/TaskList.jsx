@@ -10,41 +10,53 @@ import {
   Modal,
   Select,
   HoverCard,
-  Avatar,
-  Stack,
-  Anchor,
+  NumberInput,
 } from "@mantine/core";
+
+import { DateInput } from "@mantine/dates";
+
 import axios from "axios";
 import { serverUrl } from "../../constants/env";
 import "./styles.css"; // Import the CSS file
 import { useDisclosure } from "@mantine/hooks";
 import AuthContext from "../../context/AuthContext";
-import { IconSearch, IconTrash } from "@tabler/icons-react";
-import { useRef } from "react";
+import {
+  IconCalendar,
+  IconCalendarStats,
+  IconSearch,
+  IconTrash,
+} from "@tabler/icons-react";
+
+import "@mantine/dates/styles.css";
 
 // TaskCreation Component
 export const TaskCreation = ({ refreshTasks }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [estimatedTime, setEstimatedTime] = useState(1);
+  const [dueDate, setDueDate] = useState(null);
 
-  // Used in modals
   const [opened, { open, close }] = useDisclosure(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleCreateTask = () => {
-    if (title.trim() === "" || description.trim() === "") return;
+    if (title.trim() === "" || description.trim() === "" || !dueDate) return;
     axios
       .post(`${serverUrl}/tasks/create/`, {
         title,
         description,
         user: user.id,
+        estimated_time: estimatedTime * 3600,
+        due_date: dueDate,
       })
       .then((response) => {
         console.log(response);
         refreshTasks(); // Refresh task list after creating a new task
         setTitle("");
         setDescription("");
+        setEstimatedTime("");
+        setDueDate(null);
         close(); // Close the modal
       })
       .catch((error) => {
@@ -81,6 +93,30 @@ export const TaskCreation = ({ refreshTasks }) => {
             onKeyDown={handleKeyDown}
             required
           />
+
+          <NumberInput
+            decimalSeparator=","
+            label="Temps estimé (en heure)"
+            description="Saisissez le temps estimé"
+            placeholder="ex: 2,5"
+            defaultValue={1}
+            value={estimatedTime}
+            onChange={(value) => setEstimatedTime(value)}
+            precision={2}
+            step={0.5}
+            required
+          />
+
+          <DateInput
+            label="Date d'échéance estimé"
+            description="Saisissez le date d'écheance estimé"
+            placeholder="ex: 23 September 2024"
+            valueFormat="DD MMMM YYYY"
+            value={dueDate}
+            onChange={(value) => setDueDate(value)}
+            required
+          />
+
           <Button color="blue" fullWidth onClick={handleCreateTask}>
             Création de la tâche
           </Button>
@@ -102,6 +138,8 @@ export const TaskList = () => {
   const [description, setDescription] = useState("");
   const [statusName, setStatusName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [estimatedTime, setEstimatedTime] = useState(1);
+  const [dueDate, setDueDate] = useState(null);
   const { auth } = useContext(AuthContext);
 
   const [openedEdit, { open: openEdit, close: closeEdit }] =
@@ -131,6 +169,8 @@ export const TaskList = () => {
   const handleEditClick = (task) => {
     setSelectedTask(task);
     setTitle(task.title);
+    setEstimatedTime(convertTimeToDecimalHours(task.estimated_time));
+    setDueDate(task.due_date);
     setDescription(task.description);
     setStatusName(task.status.name); // Set initial statusId to the current status
     openEdit();
@@ -145,6 +185,8 @@ export const TaskList = () => {
         user_id: auth.user.id,
         task_id: selectedTask.id,
         status_name: statusName, // Send the new status name
+        estimated_time: estimatedTime * 3600,
+        due_date: dueDate,
       })
       .then((response) => {
         console.log(response);
@@ -198,6 +240,29 @@ export const TaskList = () => {
     }, 300);
 
     setTimeoutId(id);
+  };
+
+  const formatDateToFrench = (dateString) => {
+    const date = new Date(dateString);
+    const formatter = new Intl.DateTimeFormat("fr-FR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+    return formatter.format(date);
+  };
+
+  const convertTimeToDecimalHours = (timeString) => {
+    if (timeString != 1 && timeString !== null) {
+      // Split the timeString by ':' to extract hours, minutes, and seconds
+      const [hours, minutes, seconds] = timeString.split(":").map(Number);
+
+      // Convert minutes and seconds to a fraction of an hour
+      const decimalHours = hours + minutes / 60 + seconds / 3600;
+
+      // Return the decimal hours, formatted to 2 decimal places
+      return decimalHours.toFixed(2);
+    }
   };
 
   const setColor = (status) => {
@@ -265,19 +330,47 @@ export const TaskList = () => {
                     disabled
                   />
 
-                  <TextInput
+                  <Textarea
                     label="Description de la tâche"
                     value={task.description}
                     disabled
                   />
 
-                  <Text size="sm">
-                    Status de la tâche
-                  </Text>
+                  <div className="flex gap-6 justify-between">
+                    <Text size="sm" fw={500}>
+                      Status de la tâche
+                    </Text>
 
-                  <Badge color={setColor(task.status.name)}>
-                    {setStatus(task.status.name)}
-                  </Badge>
+                    <Badge color={setColor(task.status.name)}>
+                      {setStatus(task.status.name)}
+                    </Badge>
+                  </div>
+
+                  <div className="flex gap-6 justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <IconCalendar size={23} />
+                      <Text size="sm" fw={500}>
+                        Durée estimée (en heures)
+                      </Text>
+                    </div>
+
+                    <Badge color="green" variant="dot">
+                      <Text size="xs">{task.estimated_time}</Text>
+                    </Badge>
+                  </div>
+
+                  <div className="flex gap-6 justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <IconCalendarStats size={23} />
+                      <Text size="sm" fw={500}>
+                        {"Date d'échéance estimée"}
+                      </Text>
+                    </div>
+
+                    <Badge color="red" variant="outline">
+                      <Text size="xs">{formatDateToFrench(task.due_date)}</Text>
+                    </Badge>
+                  </div>
                 </div>
               </Group>
             </HoverCard.Dropdown>
@@ -314,6 +407,29 @@ export const TaskList = () => {
             onChange={(value) => setStatusName(value)} // Update statusName when a status is selected
             searchable
           />
+
+          <NumberInput
+            decimalSeparator=","
+            label="Temps estimé (en heure)"
+            description="Saisissez le temps estimé"
+            placeholder="ex: 2,5"
+            defaultValue={1}
+            value={estimatedTime}
+            onChange={(value) => setEstimatedTime(value)}
+            precision={2}
+            step={0.5}
+            required
+          />
+
+          <DateInput
+            label="Date d'échéance estimé"
+            description="Saisissez la date d'échéance estimée"
+            placeholder="ex: 23 September 2024"
+            value={dueDate !== null && new Date(dueDate)} // This should be a Date object or null
+            onChange={(value) => setDueDate(value)} // Make sure this value is being handled correctly
+            required
+          />
+
 
           <div className="flex gap-2">
             <Button
