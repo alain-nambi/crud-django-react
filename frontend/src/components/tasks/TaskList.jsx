@@ -15,6 +15,7 @@ import { serverUrl } from "../../constants/env";
 import "./styles.css"; // Import the CSS file
 import { useDisclosure } from "@mantine/hooks";
 import AuthContext from "../../context/AuthContext";
+import { IconTrash } from "@tabler/icons-react";
 
 // TaskCreation Component
 export const TaskCreation = ({ refreshTasks }) => {
@@ -100,9 +101,11 @@ export const TaskList = () => {
   const [openedEdit, { open: openEdit, close: closeEdit }] =
     useDisclosure(false);
 
+  console.log(auth);
+
   const fetchTasks = () => {
     axios
-      .get(`${serverUrl}/tasks/list/`)
+      .get(`${serverUrl}/tasks/list/`, { params: { user_id: auth.user.id } })
       .then((response) => {
         console.log(response);
         const sortedTasks = response.data.sort((a, b) =>
@@ -135,11 +138,26 @@ export const TaskList = () => {
         description: description,
         user_id: auth.user.id,
         task_id: selectedTask.id,
-        status_name: statusName, // Envoyer le nouvel ID du statut
+        status_name: statusName, // Send the new status name
       })
       .then((response) => {
         console.log(response);
         fetchTasks(); // Refresh task list after updating a task
+        closeEdit(); // Close the edit modal
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleDeleteTask = (task_id) => {
+    axios
+      .delete(`${serverUrl}/tasks/delete/`, {
+        data: { task_id: task_id, user_id: auth.user.id },
+      })
+      .then((response) => {
+        console.log(response);
+        fetchTasks(); // Refresh task list after deleting a task
         closeEdit(); // Close the edit modal
       })
       .catch((error) => {
@@ -185,7 +203,6 @@ export const TaskList = () => {
           >
             <Group className="flex flex-col">
               <Text fw={500}>{task.title}</Text>
-              <Text size="xs">{task.description}</Text>
               <Badge color={setColor(task.status.name)}>
                 {setStatus(task.status.name)}
               </Badge>
@@ -219,13 +236,20 @@ export const TaskList = () => {
             label="Modifier le statut"
             placeholder="Sélectionner le statut"
             data={statusOptions}
-            value={statusName} // Use the statusId state here
-            onChange={(value) => setStatusName(value)} // Update statusId when a status is selected
+            value={statusName} // Use the statusName state here
+            onChange={(value) => setStatusName(value)} // Update statusName when a status is selected
           />
 
-          <Button color="blue" fullWidth onClick={handleUpdateTask}>
-            Mettre à jour la tâche
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              color="red"
+              onClick={() => handleDeleteTask(selectedTask.id)} // Pass the task ID to handleDeleteTask
+            ><IconTrash /></Button>
+
+            <Button color="blue" fullWidth onClick={handleUpdateTask}>
+              Mettre à jour la tâche
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>
