@@ -1,16 +1,10 @@
 import React, { useContext, useEffect } from "react";
-import { Button, TextInput, Avatar } from "@mantine/core";
+import { Button, TextInput, Avatar, Text } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import "./styles.css"; // Import the CSS file for smooth styling
 import { TaskList } from "../tasks/TaskList";
-import {
-  IconLock,
-  IconAt,
-  IconSortAscending,
-  IconSortDescending,
-  IconLogout,
-} from "@tabler/icons-react";
+import { IconLogout } from "@tabler/icons-react";
 import { toast } from "react-toastify";
 
 const Home = () => {
@@ -25,7 +19,7 @@ const Home = () => {
         autoClose: 2000,
       }
     );
-  });
+  }, [auth.user.username]);
 
   const handleSignOff = (e) => {
     e.preventDefault();
@@ -45,7 +39,8 @@ const Home = () => {
             name={auth.user.username}
             title={auth.user.username}
             style={{ cursor: "pointer" }}
-          ></Avatar>
+          >
+          </Avatar>
 
           <Button
             className="logout-button"
@@ -55,6 +50,13 @@ const Home = () => {
             Se déconnecter
           </Button>
         </div>
+      </div>
+
+      {/* Footer with Copyright */}
+      <div className="absolute bottom-0 right-0 px-8 py-4">
+        <Text size="sm" color="dimmed">
+          © {new Date().getFullYear()} Alain Nambii. Tous droits réservés.
+        </Text>
       </div>
     </>
   );
