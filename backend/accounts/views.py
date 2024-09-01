@@ -24,7 +24,14 @@ def signup(request):
         # Check if email already exists
         if User.objects.filter(email=email).exists():
             return Response(
-                {'email': 'This email is already in use.'},
+                {'message': 'Cet adresse e-mail est déjà utilisé'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+         # Check if email already exists
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {'message': 'Cette utilisateur est déjà utilisé.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -42,7 +49,8 @@ def signup(request):
         return Response(
             {
                 'token': token.key, 
-                'user': serializer.data
+                'user': serializer.data,
+                'message': f'Utilisateur {user.username} a été créé avec succès'
             },
             status=status.HTTP_201_CREATED
         )
