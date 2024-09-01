@@ -1,11 +1,12 @@
 import React, { useContext, useEffect } from "react";
-import { Button, TextInput, Avatar, Text } from "@mantine/core";
+import { Button, TextInput, Avatar, Text, Image } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import "./styles.css"; // Import the CSS file for smooth styling
 import { TaskList } from "../tasks/TaskList";
 import { IconLogout } from "@tabler/icons-react";
 import { toast } from "react-toastify";
+import Logo from "../../assets/Logo-Blueline.jpg"
 
 const Home = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Home = () => {
       <div className="home-container flex flex-col gap-6">
         <TaskList />
 
-        <div className="flex items-center absolute top-0 right-0">
+        <div className="flex items-center absolute top-0 right-0 content">
           <Avatar
             color="blue"
             key={auth.user.username}
@@ -53,7 +54,8 @@ const Home = () => {
       </div>
 
       {/* Footer with Copyright */}
-      <div className="absolute bottom-0 right-0 px-8 py-4">
+      <div className="absolute bottom-0 right-0 px-8 py-4 flex items-center gap-6">
+        <img src={Logo} alt="" width={100}/>
         <Text size="sm" color="dimmed">
           © {new Date().getFullYear()} Alain Nambii. Tous droits réservés.
         </Text>
