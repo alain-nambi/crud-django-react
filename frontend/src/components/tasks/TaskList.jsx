@@ -42,7 +42,9 @@ export const TaskCreation = ({ refreshTasks }) => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleCreateTask = () => {
-    if (title.trim() === "" || description.trim() === "" || !dueDate) return;
+    if (title.trim() === "" || description.trim() === "" || !dueDate || !estimatedTime) {
+      toast.error('Veuillez remplir toutes les champs requis')
+    };
     axios
       .post(`${serverUrl}/tasks/create/`, {
         title,
