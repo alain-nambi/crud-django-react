@@ -9,6 +9,7 @@ from .serializers import TaskSerializer
 
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from .models import Task, Status
 
@@ -94,4 +95,17 @@ def get_tasks(request):
     tasks = Task.objects.filter(user_id=user_id).all()
     serializer = TaskSerializer(tasks, many=True)
     
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def search_task(request):
+    user_id = request.data.get('user_id')
+    q_search = request.data.get('q_search', '')
+
+    # Filter tasks based on the user_id and search query (q_search)
+    tasks = Task.objects.filter(
+        user_id=user_id
+    ).filter(Q(title__icontains=q_search) | Q(description__icontains=q_search))
+
+    serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)

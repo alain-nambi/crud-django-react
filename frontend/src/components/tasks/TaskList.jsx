@@ -9,13 +9,18 @@ import {
   Group,
   Modal,
   Select,
+  HoverCard,
+  Avatar,
+  Stack,
+  Anchor,
 } from "@mantine/core";
 import axios from "axios";
 import { serverUrl } from "../../constants/env";
 import "./styles.css"; // Import the CSS file
 import { useDisclosure } from "@mantine/hooks";
 import AuthContext from "../../context/AuthContext";
-import { IconTrash } from "@tabler/icons-react";
+import { IconSearch, IconTrash } from "@tabler/icons-react";
+import { useRef } from "react";
 
 // TaskCreation Component
 export const TaskCreation = ({ refreshTasks }) => {
@@ -96,12 +101,13 @@ export const TaskList = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [statusName, setStatusName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const { auth } = useContext(AuthContext);
 
   const [openedEdit, { open: openEdit, close: closeEdit }] =
     useDisclosure(false);
 
-  console.log(auth);
+  // console.log(auth);
 
   const fetchTasks = () => {
     axios
@@ -165,6 +171,35 @@ export const TaskList = () => {
       });
   };
 
+  const [timeoutId, setTimeoutId] = useState(null);
+
+  const handleSearchTask = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    // Clear the previous timeout
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    // Set a new timeout
+    const id = setTimeout(() => {
+      axios
+        .post(`${serverUrl}/tasks/search/`, {
+          user_id: auth.user.id,
+          q_search: query,
+        })
+        .then((response) => {
+          setTasks(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }, 300);
+
+    setTimeoutId(id);
+  };
+
   const setColor = (status) => {
     if (status === "ongoing") return "blue";
     if (status === "blocked") return "red";
@@ -186,28 +221,67 @@ export const TaskList = () => {
   return (
     <div className="task-list-container">
       <TaskCreation refreshTasks={fetchTasks} />
+
+      <TextInput
+        className="mb-6"
+        placeholder="Rechercher par le nom de la tâche / par description"
+        leftSection={<IconSearch size={18} />}
+        onChange={handleSearchTask}
+        value={searchQuery} // Bind value to searchQuery state
+      />
+
       <Text fw={600} mb={"md"} size="1.25rem">
         Liste des tâches
       </Text>
+
       <div className="task-list-grid">
         {tasks.map((task, index) => (
-          <Card
-            className="task-card"
-            shadow="sm"
-            padding="md"
-            radius="md"
-            withBorder
-            key={index}
-            style={{ cursor: "pointer" }}
-            onClick={() => handleEditClick(task)}
-          >
-            <Group className="flex flex-col">
-              <Text fw={500}>{task.title}</Text>
-              <Badge color={setColor(task.status.name)}>
-                {setStatus(task.status.name)}
-              </Badge>
-            </Group>
-          </Card>
+          <HoverCard withArrow key={index}>
+            <HoverCard.Target>
+              <Card
+                className="task-card"
+                shadow="sm"
+                padding="md"
+                radius="md"
+                withBorder
+                key={index}
+                style={{ cursor: "pointer" }}
+                onClick={() => handleEditClick(task)}
+              >
+                <Group className="flex flex-col">
+                  <Text fw={500}>{task.title}</Text>
+                  <Badge color={setColor(task.status.name)}>
+                    {setStatus(task.status.name)}
+                  </Badge>
+                </Group>
+              </Card>
+            </HoverCard.Target>
+            <HoverCard.Dropdown>
+              <Group>
+                <div className="flex flex-col gap-4 p-4 w-96">
+                  <TextInput
+                    label="Nom de la tâche"
+                    value={task.title}
+                    disabled
+                  />
+
+                  <TextInput
+                    label="Description de la tâche"
+                    value={task.description}
+                    disabled
+                  />
+
+                  <Text size="sm">
+                    Status de la tâche
+                  </Text>
+
+                  <Badge color={setColor(task.status.name)}>
+                    {setStatus(task.status.name)}
+                  </Badge>
+                </div>
+              </Group>
+            </HoverCard.Dropdown>
+          </HoverCard>
         ))}
       </div>
 
@@ -238,13 +312,17 @@ export const TaskList = () => {
             data={statusOptions}
             value={statusName} // Use the statusName state here
             onChange={(value) => setStatusName(value)} // Update statusName when a status is selected
+            searchable
           />
 
           <div className="flex gap-2">
             <Button
               color="red"
               onClick={() => handleDeleteTask(selectedTask.id)} // Pass the task ID to handleDeleteTask
-            ><IconTrash /></Button>
+              title="Supprimer la tâche"
+            >
+              <IconTrash />
+            </Button>
 
             <Button color="blue" fullWidth onClick={handleUpdateTask}>
               Mettre à jour la tâche
