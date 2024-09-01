@@ -82,7 +82,7 @@ def update_task(request):
         )
     
     return Response(
-       {'message': f'{task_instance.title} a été mis à jour avec succès'},
+       {'message': f'Une erreur est survenue lors de la mise à jour de la tâche{task_instance.title}'},
         status=status.HTTP_401_UNAUTHORIZED
     )
         
@@ -97,7 +97,7 @@ def delete_task(request):
         
         return Response(
             {'message': f'La tâche {task_instance.title} a été supprimé avec succès'},
-            status=status.HTTP_204_NO_CONTENT
+            status=status.HTTP_200_OK
         )
     return Response(
         {'message': f'Une erreur est survenue sur la suppression de la tâche {task_instance.title}'},

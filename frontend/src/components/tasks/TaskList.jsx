@@ -28,6 +28,7 @@ import {
 } from "@tabler/icons-react";
 
 import "@mantine/dates/styles.css";
+import { toast, ToastContainer } from "react-toastify";
 
 // TaskCreation Component
 export const TaskCreation = ({ refreshTasks }) => {
@@ -52,6 +53,14 @@ export const TaskCreation = ({ refreshTasks }) => {
       })
       .then((response) => {
         console.log(response);
+
+        const { title } = response.data;
+
+        toast.success(`La tâche ${title} a été créé avec succès`, {
+          position: "top-center",
+          autoClose: 2000,
+        });
+
         refreshTasks(); // Refresh task list after creating a new task
         setTitle("");
         setDescription("");
@@ -228,10 +237,16 @@ export const TaskList = () => {
       })
       .then((response) => {
         console.log(response);
+
+        const { message } = response.data;
+        toast.success(message, { position: "top-center", autoClose: 2000 });
+
         fetchTasks(); // Refresh task list after updating a task
         closeEdit(); // Close the edit modal
       })
       .catch((error) => {
+        toast.error(error.data.message);
+
         console.log(error);
       });
   };
@@ -243,10 +258,15 @@ export const TaskList = () => {
       })
       .then((response) => {
         console.log(response);
+
+        const { message } = response.data;
+        toast.success(message, { position: "top-center", autoClose: 2000 });
+
         fetchTasks(); // Refresh task list after deleting a task
         closeEdit(); // Close the edit modal
       })
       .catch((error) => {
+        toast.error(error.message);
         console.log(error);
       });
   };
@@ -366,7 +386,9 @@ export const TaskList = () => {
       </div>
 
       <Text fw={600} mb={"md"} size="1.25rem">
-        {tasks.length > 0 ? 'Liste des tâches' : 'Veuillez créer une tâche pour voir la liste des tâches'}
+        {tasks.length > 0
+          ? "Liste des tâches"
+          : "Veuillez créer une tâche pour voir la liste des tâches"}
       </Text>
 
       <div className="task-list-grid">
@@ -508,7 +530,7 @@ export const TaskList = () => {
             <Button
               color="red"
               onClick={() => handleDeleteTask(selectedTask.id)} // Pass the task ID to handleDeleteTask
-              title="Supprimer la tâche"
+              title={`Supprimer la tâche ${title}`}
             >
               <IconTrash />
             </Button>
