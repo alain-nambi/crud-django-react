@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 const ProtectedRoute = ({ children }) => {
   const { auth } = useContext(AuthContext);
 
-  return auth.token & auth.user ? children : <Navigate to={"/signin"} />;
+  return auth.token && auth.user ? children : <Navigate to={"/signin"} />;
 };
 
 export default ProtectedRoute;
