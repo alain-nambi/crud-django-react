@@ -8,13 +8,13 @@ import {
   Badge,
   Group,
   Modal,
-  Indicator
+  Select,
 } from "@mantine/core";
 import axios from "axios";
 import { serverUrl } from "../../constants/env";
 import "./styles.css"; // Import the CSS file
 import { useDisclosure } from "@mantine/hooks";
-import AuthContext from "../../context/AuthContext"
+import AuthContext from "../../context/AuthContext";
 
 // TaskCreation Component
 export const TaskCreation = ({ refreshTasks }) => {
@@ -94,11 +94,9 @@ export const TaskList = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const { auth } = useContext(AuthContext)
+  const [statusName, setStatusName] = useState("");
+  const { auth } = useContext(AuthContext);
 
-  // console.log('auth', auth);
-
-  // const [openedCreate, { open: openCreate, close: closeCreate }] = useDisclosure(false);
   const [openedEdit, { open: openEdit, close: closeEdit }] =
     useDisclosure(false);
 
@@ -125,6 +123,7 @@ export const TaskList = () => {
     setSelectedTask(task);
     setTitle(task.title);
     setDescription(task.description);
+    setStatusName(task.status.name); // Set initial statusId to the current status
     openEdit();
   };
 
@@ -136,7 +135,7 @@ export const TaskList = () => {
         description: description,
         user_id: auth.user.id,
         task_id: selectedTask.id,
-        status: selectedTask.status.id
+        status_name: statusName, // Envoyer le nouvel ID du statut
       })
       .then((response) => {
         console.log(response);
@@ -154,9 +153,24 @@ export const TaskList = () => {
     if (status === "finished") return "green";
   };
 
+  const statusOptions = [
+    { value: "ongoing", label: "En cours" },
+    { value: "blocked", label: "En blocage" },
+    { value: "finished", label: "Terminé" },
+  ];
+
+  const setStatus = (status) => {
+    if (status === "ongoing") return "En cours";
+    if (status === "blocked") return "En blocage";
+    if (status === "finished") return "Terminé";
+  };
+
   return (
     <div className="task-list-container">
       <TaskCreation refreshTasks={fetchTasks} />
+      <Text fw={600} mb={"md"} size="1.25rem">
+        Liste des tâches
+      </Text>
       <div className="task-list-grid">
         {tasks.map((task, index) => (
           <Card
@@ -169,14 +183,13 @@ export const TaskList = () => {
             style={{ cursor: "pointer" }}
             onClick={() => handleEditClick(task)}
           >
-            {/* <Indicator> */}
-              <Group className="flex justify-between">
-                <Text fw={500}>{task.title}</Text>
-                <Badge color={setColor(task.status.name)}>
-                  {task.status.name}
-                </Badge>
-              </Group>
-            {/* </ Indicator> */}
+            <Group className="flex flex-col">
+              <Text fw={500}>{task.title}</Text>
+              <Text size="xs">{task.description}</Text>
+              <Badge color={setColor(task.status.name)}>
+                {setStatus(task.status.name)}
+              </Badge>
+            </Group>
           </Card>
         ))}
       </div>
@@ -192,6 +205,7 @@ export const TaskList = () => {
             onChange={(e) => setTitle(e.target.value)}
             required
           />
+
           <Textarea
             label="Description de la tâche"
             description="Saisissez la description de la tâche..."
@@ -200,6 +214,15 @@ export const TaskList = () => {
             onChange={(e) => setDescription(e.target.value)}
             required
           />
+
+          <Select
+            label="Modifier le statut"
+            placeholder="Sélectionner le statut"
+            data={statusOptions}
+            value={statusName} // Use the statusId state here
+            onChange={(value) => setStatusName(value)} // Update statusId when a status is selected
+          />
+
           <Button color="blue" fullWidth onClick={handleUpdateTask}>
             Mettre à jour la tâche
           </Button>

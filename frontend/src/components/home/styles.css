@@ -1,8 +1,7 @@
 /* Home.css */
 .home-container {
-    display: flex;
+    padding: 2rem;
     gap: 2rem;
-    height: 100vh;
     animation: fadeIn 1s ease-in-out;
 }
 
@@ -15,10 +14,6 @@
 }
 
 .logout-button {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    margin: 2rem;
     background-color: #D20B34;
     color: white;
     padding: 10px 20px;

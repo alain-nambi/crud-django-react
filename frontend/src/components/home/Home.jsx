@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Button } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import "./styles.css"; // Import the CSS file for smooth styling
@@ -23,30 +23,19 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <div className="home-container">
-        <div
-          style={{
-            width: "300px",
-            height: "100vh",
-            border: "1px solid gray",
-            position: "relative",
-          }}
+    <>
+      <div className="home-container flex flex-col gap-6">
+        <TaskList />
+
+        <Button
+          className="logout-button"
+          onClick={handleSignOff}
+          leftSection={<IconLogout size={24} />}
         >
-          <Button
-            className="logout-button"
-            onClick={handleSignOff}
-            leftSection={<IconLogout size={24} />}
-            style={{ width: "232px" }}
-          >
-            Se déconnecter
-          </Button>
-        </div>
-        <div>
-          <TaskList />
-        </div>
+          Se déconnecter
+        </Button>
       </div>
-    </div>
+    </>
   );
 };
 

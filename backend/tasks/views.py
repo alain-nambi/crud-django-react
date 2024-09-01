@@ -48,10 +48,10 @@ def update_task(request):
     user_id = request.data.get('user_id')
     title =  request.data.get('title')
     description =  request.data.get('description')
-    status_id =  request.data.get('status')
+    status_name =  request.data.get('status_name')
     
     task_instance = get_object_or_404(Task, id=int(task_id), user=int(user_id))
-    status_instance = Status.objects.get(pk=int(status_id))
+    status_instance = Status.objects.filter(name=status_name).first()
     
     if task_instance:
         task_instance.title = title
