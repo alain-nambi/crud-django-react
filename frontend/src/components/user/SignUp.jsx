@@ -74,7 +74,7 @@ const SignUp = () => {
           toast.success(message);
 
           setTimeout(() => {
-            navigate("/home");
+            navigate("/signin");
             setLoading(false);
           }, 2000);
         }

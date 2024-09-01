@@ -1,6 +1,12 @@
 import React, { useContext, useState } from "react";
 import { TextInput, PasswordInput, Text, Button, Image } from "@mantine/core";
-import { IconLock, IconAt, IconSortAscending, IconSortDescending, IconLogin } from "@tabler/icons-react";
+import {
+  IconLock,
+  IconAt,
+  IconSortAscending,
+  IconSortDescending,
+  IconLogin,
+} from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import "./styles.css";
 import Logo from "../../assets/Logo-Blueline.jpg";
@@ -9,6 +15,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import { Loader } from "../effect/Loader";
+import { toast, ToastContainer } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -34,17 +43,22 @@ const SignIn = () => {
       .then((response) => {
         if (response.status === 200) {
           const { token, user } = response.data;
+
           login(token, user);
 
           setTimeout(() => {
-            setLoading(false); // Stop loading animation after 2 seconds
             navigate("/home");
-            resetInputFields();
-          }, 1000); // Delay navigation by 1 seconds
+            setLoading(false);
+          }, 2000);
+
+          resetInputFields();
         }
       })
       .catch((error) => {
         console.log(error);
+
+        toast.error(`L'utilisateur  ou le mot de passe est incorrect`);
+
         setLoading(false); // Stop loading animation in case of error
         resetInputFields();
       });
@@ -52,6 +66,7 @@ const SignIn = () => {
 
   return (
     <div className="flex items-center justify-center h-screen">
+      <ToastContainer />
       {loading ? (
         <Loader /> // Display loading animation
       ) : (
@@ -101,7 +116,13 @@ const SignIn = () => {
               required
             />
 
-            <Button variant="filled" color="#D20B34" type="submit" fullWidth leftSection={<IconLogin size={24}/>}>
+            <Button
+              variant="filled"
+              color="#D20B34"
+              type="submit"
+              fullWidth
+              leftSection={<IconLogin size={24} />}
+            >
               Se connecter
             </Button>
 
