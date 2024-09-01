@@ -8,6 +8,7 @@ import {
   Badge,
   Group,
   Modal,
+  Indicator
 } from "@mantine/core";
 import axios from "axios";
 import { serverUrl } from "../../constants/env";
@@ -28,7 +29,7 @@ export const TaskCreation = ({ refreshTasks }) => {
   const handleCreateTask = () => {
     if (title.trim() === "" || description.trim() === "") return;
     axios
-      .post(`${serverUrl}/tasks/create`, {
+      .post(`${serverUrl}/tasks/create/`, {
         title,
         description,
         user: user.id,
@@ -103,7 +104,7 @@ export const TaskList = () => {
 
   const fetchTasks = () => {
     axios
-      .get(`${serverUrl}/tasks/list`)
+      .get(`${serverUrl}/tasks/list/`)
       .then((response) => {
         console.log(response);
         const sortedTasks = response.data.sort((a, b) =>
@@ -168,12 +169,14 @@ export const TaskList = () => {
             style={{ cursor: "pointer" }}
             onClick={() => handleEditClick(task)}
           >
-            <Group className="flex justify-between">
-              <Text fw={500}>{task.title}</Text>
-              <Badge color={setColor(task.status.name)}>
-                {task.status.name}
-              </Badge>
-            </Group>
+            {/* <Indicator> */}
+              <Group className="flex justify-between">
+                <Text fw={500}>{task.title}</Text>
+                <Badge color={setColor(task.status.name)}>
+                  {task.status.name}
+                </Badge>
+              </Group>
+            {/* </ Indicator> */}
           </Card>
         ))}
       </div>

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { TextInput, PasswordInput, Text, Button, Image } from "@mantine/core";
-import { IconLock, IconAt } from "@tabler/icons-react";
+import { IconLock, IconAt, IconSortAscending, IconSortDescending, IconLogin } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import "./styles.css";
 import Logo from "../../assets/Logo-Blueline.jpg";
@@ -101,7 +101,7 @@ const SignIn = () => {
               required
             />
 
-            <Button variant="filled" color="#D20B34" type="submit" fullWidth>
+            <Button variant="filled" color="#D20B34" type="submit" fullWidth leftSection={<IconLogin size={24}/>}>
               Se connecter
             </Button>
 
