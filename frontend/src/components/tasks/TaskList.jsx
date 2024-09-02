@@ -30,122 +30,8 @@ import {
 import "@mantine/dates/styles.css";
 import { toast } from "react-toastify";
 
-// TaskCreation Component
-export const TaskCreation = ({ refreshTasks }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [estimatedTime, setEstimatedTime] = useState(1);
-  const [dueDate, setDueDate] = useState(null);
-
-  const [opened, { open, close }] = useDisclosure(false);
-
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const handleCreateTask = () => {
-    if (
-      title.trim() === "" ||
-      description.trim() === "" ||
-      !dueDate ||
-      !estimatedTime
-    ) {
-      toast.error("Veuillez remplir toutes les champs requis");
-      return
-    }
-    axios
-      .post(`${serverUrl}/tasks/create/`, {
-        title,
-        description,
-        user: user.id,
-        estimated_time: estimatedTime * 3600,
-        due_date: dueDate,
-      })
-      .then((response) => {
-        console.log(response);
-
-        const { title } = response.data;
-
-        toast.success(`La tâche ${title} a été créé avec succès`, {
-          position: "top-center",
-          autoClose: 2000,
-        });
-
-        refreshTasks(); // Refresh task list after creating a new task
-        setTitle("");
-        setDescription("");
-        setEstimatedTime("");
-        setDueDate(null);
-        close(); // Close the modal
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleCreateTask();
-    }
-  };
-
-  return (
-    <div>
-      <Modal opened={opened} onClose={close} title="Création d'une tâche" centered>
-        <div className="flex flex-col gap-4 p-4 w-96">
-          <TextInput
-            label="Nom de la tâche"
-            description="Saisissez le nom de la tâche..."
-            placeholder="ex: Créer un bouton de sauvegarde"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={handleKeyDown}
-            required
-          />
-          <Textarea
-            label="Description de la tâche"
-            description="Saisissez la description de la tâche..."
-            placeholder="ex: Couleur du bouton en vert"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            onKeyDown={handleKeyDown}
-            required
-          />
-
-          <NumberInput
-            decimalSeparator=","
-            label="Temps estimé (en heure)"
-            description="Saisissez le temps estimé"
-            placeholder="ex: 2,5"
-            defaultValue={1}
-            value={estimatedTime}
-            onChange={(value) => setEstimatedTime(value)}
-            precision={2}
-            step={0.5}
-            required
-          />
-
-          <DateInput
-            label="Date d'échéance estimé"
-            description="Saisissez le date d'écheance estimé"
-            placeholder="ex: 23 September 2024"
-            valueFormat="DD MMMM YYYY"
-            value={dueDate}
-            onChange={(value) => setDueDate(value)}
-            required
-          />
-
-          <Button color="blue" fullWidth onClick={handleCreateTask}>
-            Création de la tâche
-          </Button>
-        </div>
-      </Modal>
-
-      <Button onClick={open} className="mb-6">
-        Créer une tâche
-      </Button>
-    </div>
-  );
-};
+import { TaskCreate } from "./TaskCreate";
+import { formatDateToFrench, convertTimeToDecimalHours } from "../../utils/utils";
 
 // TaskList Component
 export const TaskList = () => {
@@ -311,29 +197,6 @@ export const TaskList = () => {
     setTimeoutId(id);
   };
 
-  const formatDateToFrench = (dateString) => {
-    const date = new Date(dateString);
-    const formatter = new Intl.DateTimeFormat("fr-FR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-    return formatter.format(date);
-  };
-
-  const convertTimeToDecimalHours = (timeString) => {
-    if (timeString != 1 && timeString !== null) {
-      // Split the timeString by ':' to extract hours, minutes, and seconds
-      const [hours, minutes, seconds] = timeString.split(":").map(Number);
-
-      // Convert minutes and seconds to a fraction of an hour
-      const decimalHours = hours + minutes / 60 + seconds / 3600;
-
-      // Return the decimal hours, formatted to 2 decimal places
-      return decimalHours.toFixed(2);
-    }
-  };
-
   const setColor = (status) => {
     if (status === "ongoing") return "blue";
     if (status === "blocked") return "red";
@@ -355,7 +218,7 @@ export const TaskList = () => {
   return (
     <>
       <div className="task-list-container">
-        <TaskCreation refreshTasks={fetchTasks} />
+        <TaskCreate refreshTasks={fetchTasks} />
 
         <Text fw={600} mb={"md"} size="1.25rem">
           Liste des fonctionnalités
@@ -366,7 +229,6 @@ export const TaskList = () => {
             Bordure rouge : La date d'écheance a été dépassé
           </Text>
         </div>
-
 
         <div className="flex gap-4 items-center mb-6">
           <TextInput
