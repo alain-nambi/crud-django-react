@@ -11,7 +11,7 @@ import {
   Select,
   HoverCard,
   NumberInput,
-  Divider,
+  Notification,
 } from "@mantine/core";
 
 import { DateInput } from "@mantine/dates";
@@ -225,25 +225,23 @@ export const TaskList = () => {
       <div className="task-list-container">
         <TaskCreate refreshTasks={fetchTasks} />
 
+        <div className="flex mb-4">
+          <Notification color="red" title="Bordure rouge" withCloseButton={false}>
+            Indique que la date d'écheance  pour la tâche a été dépassé
+          </Notification>
+        </div>
+
         {/* Liste des fonctionnalités */}
         <Text fw={600} mb={"md"} size="1.25rem">
           Liste des fonctionnalités
         </Text>
-
-        <div className="flex">
-          <Text
-            className="py-2 px-4 text-red-500 border border-red-500 rounded-md text-sm"
-          >
-            Bordure rouge : La date d'écheance a été dépassé
-          </Text>
-        </div>
 
         {/* Recherches, Filtres et Tri */}
         <div className="flex gap-4 items-center mb-6">
           <TextInput
             label="Recherche"
             description="Faite une recherche par rapport au nom ou description de la tâche"
-            placeholder="Saisissez le nom de tâche"
+            placeholder="Saisissez le nom de tâche ou description"
             leftSection={<IconSearch size={18} />}
             onChange={handleSearchTask}
             value={searchQuery} // Bind value to searchQuery state
@@ -288,7 +286,7 @@ export const TaskList = () => {
               <HoverCard.Target>
                 <Card
                   className={`task-card ${
-                    task.created_at > task.due_date ? "border border-red-500" : ""
+                    task.created_at > task.due_date && task.status.name !== 'finished' ? "border border-red-500" : ""
                   }`}
                   padding="md"
                   radius="md"
@@ -304,6 +302,7 @@ export const TaskList = () => {
                         className={`${
                           task.status.name === "finished" && "line-through"
                         } w-3/4`}
+                        title={task.title}
                       >
                         {capitalizeFirstLetter(task.title)}
                       </Text>
@@ -334,13 +333,11 @@ export const TaskList = () => {
 
                     <div className="flex justify-between">
                       <Text size="xs" className="text-slate-500 font-medium">
-                        {"Date d'échéance"}
+                        {"Durée de création"}
                       </Text>
-                      <Badge color={"red"} variant="dot" size="xs">
-                        <Text size="xs" className="text-slate-500 font-light">
-                          {formatDateToFrench(task.due_date)}
-                        </Text>
-                      </Badge>
+                      <Text size="xs" className="text-slate-500 font-light">
+                        {formatDateToFrench(task.created_at)}
+                      </Text>
                     </div>
                   </div>
                 </Card>
@@ -387,7 +384,7 @@ export const TaskList = () => {
                       <div className="flex items-center gap-2">
                         <IconCalendarStats size={23} />
                         <Text size="sm" fw={500}>
-                          {"Date d'échéance estimée"}
+                          {"Date d'échéance"}
                         </Text>
                       </div>
 
