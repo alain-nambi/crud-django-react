@@ -357,6 +357,13 @@ export const TaskList = () => {
           Liste des fonctionnalités
         </Text>
 
+        <div className="flex">
+          <Text mb={"sm"} className="py-2 px-4 text-red-500 border border-red-500 rounded-md">
+            Bordure rouge : La date d'écheance a été dépassé
+          </Text>
+        </div>
+
+
         <div className="flex gap-4 items-center mb-6">
           <TextInput
             label="Recherche"
@@ -404,7 +411,7 @@ export const TaskList = () => {
             <HoverCard withArrow key={index} openDelay={50} closeDelay={0}>
               <HoverCard.Target>
                 <Card
-                  className="task-card"
+                  className={`task-card border ${task.created_at > task.due_date ? 'border-red-500' : ''}`}
                   shadow="sm"
                   padding="md"
                   radius="md"

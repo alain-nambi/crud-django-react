@@ -1,19 +1,13 @@
-from datetime import timedelta
-from django.shortcuts import render
-
+from datetime import datetime, timedelta
+import time
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import serializers
-
-from .serializers import TaskSerializer
-
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
-
 from .models import Task, Status
-
+from .serializers import TaskSerializer
 
 @api_view(['POST'])
 def create_task(request):    
@@ -24,7 +18,7 @@ def create_task(request):
         title = validated_data['title']
         description = validated_data['description']
         user_id = validated_data['user']
-        estimated_time =  validated_data['estimated_time']
+        estimated_time = validated_data['estimated_time']
         due_date = validated_data['due_date']
         
         status_instance = Status.objects.get(pk=1)
@@ -52,18 +46,16 @@ def create_task(request):
 def update_task(request):
     task_id = request.data.get('task_id')
     user_id = request.data.get('user_id')
-    title =  request.data.get('title')
-    description =  request.data.get('description')
-    status_name =  request.data.get('status_name')
+    title = request.data.get('title')
+    description = request.data.get('description')
+    status_name = request.data.get('status_name')
     
-    estimated_time =  request.data.get('estimated_time')
+    estimated_time = request.data.get('estimated_time')
+    
     # Convert seconds to interval
     estimated_time_interval = str(timedelta(seconds=int(estimated_time)))
     
     due_date = request.data.get('due_date')
-    
-    print(estimated_time_interval)
-    print(due_date)
     
     task_instance = get_object_or_404(Task, id=int(task_id), user=int(user_id))
     status_instance = Status.objects.filter(name=status_name).first()
@@ -82,7 +74,7 @@ def update_task(request):
         )
     
     return Response(
-       {'message': f'Une erreur est survenue lors de la mise à jour de la tâche{task_instance.title}'},
+       {'message': f'Une erreur est survenue lors de la mise à jour de la tâche {task_instance.title}'},
         status=status.HTTP_401_UNAUTHORIZED
     )
         
@@ -96,25 +88,25 @@ def delete_task(request):
         task_instance.delete()
         
         return Response(
-            {'message': f'La tâche {task_instance.title} a été supprimé avec succès'},
+            {'message': f'La tâche {task_instance.title} a été supprimée avec succès'},
             status=status.HTTP_200_OK
         )
     return Response(
-        {'message': f'Une erreur est survenue sur la suppression de la tâche {task_instance.title}'},
+        {'message': f'Une erreur est survenue lors de la suppression de la tâche {task_instance.title}'},
         status=status.HTTP_400_BAD_REQUEST
     )       
 
 @api_view(['GET'])
 def get_tasks(request):
     user_id = request.query_params.get('user_id')
-    status = request.query_params.get('status', None)
+    status_param = request.query_params.get('status', None)
     sort_order = request.query_params.get('sort_order', None)
     search_query = request.query_params.get('search_query', '')
 
     tasks = Task.objects.filter(user_id=user_id)
 
-    if status and status != 'null':
-        tasks = tasks.filter(status__name=status)
+    if status_param and status_param != 'null':
+        tasks = tasks.filter(status__name=status_param)
 
     if search_query:
         tasks = tasks.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
@@ -124,7 +116,7 @@ def get_tasks(request):
             tasks = tasks.order_by('title')
         elif sort_order == "Z-A":
             tasks = tasks.order_by('-title')
-    
+                
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)
 
