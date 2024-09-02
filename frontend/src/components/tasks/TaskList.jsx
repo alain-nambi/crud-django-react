@@ -49,6 +49,7 @@ export const TaskCreation = ({ refreshTasks }) => {
       !estimatedTime
     ) {
       toast.error("Veuillez remplir toutes les champs requis");
+      return
     }
     axios
       .post(`${serverUrl}/tasks/create/`, {
@@ -231,7 +232,10 @@ export const TaskList = () => {
   };
 
   const handleUpdateTask = () => {
-    if (title.trim() === "" || description.trim() === "") return;
+    if (title.trim() === "" || description.trim() === "") {
+      toast.error("Veuillez remplir toutes les champs requis");
+      return
+    };
     axios
       .put(`${serverUrl}/tasks/update/`, {
         title: title,

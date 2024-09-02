@@ -2,6 +2,11 @@
 Ce projet impliquerait la création d’une application simple de liste de tâches utilisant Django
 comme technologie principale.
 
+### Voici un utilisateur test
+#### User 1
+alainnambi@blueline.com
+alain
+
 ### Principales caractéristiques ::
 #### Fonctionnalités ::
 - Authentification d’utilisateur (inscription et connexion des utilisateurs) OK
