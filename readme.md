@@ -17,6 +17,15 @@ psql -U postgres -d todo_task -f todo_task.sql
 3. Installation des requiremntes et lancement du serveur Django
 ```bash
 cd backend/
+
+# Linux
+python3 -m venv task_env
+source task_env/bin/activate
+
+# Windows
+python -m venv task_env 
+task_env\Scripts\activate
+
 pip install -r requirements.txt
 python manage.py runserver
 ```
