@@ -103,7 +103,7 @@ def get_tasks(request):
     sort_order = request.query_params.get('sort_order', None)
     search_query = request.query_params.get('search_query', '')
 
-    tasks = Task.objects.filter(user_id=user_id)
+    tasks = Task.objects.filter(user_id=user_id).order_by('-updated_at')
 
     if status_param and status_param != 'null':
         tasks = tasks.filter(status__name=status_param)

@@ -11,6 +11,7 @@ import {
   Select,
   HoverCard,
   NumberInput,
+  Divider,
 } from "@mantine/core";
 
 import { DateInput } from "@mantine/dates";
@@ -31,7 +32,11 @@ import "@mantine/dates/styles.css";
 import { toast } from "react-toastify";
 
 import { TaskCreate } from "./TaskCreate";
-import { formatDateToFrench, convertTimeToDecimalHours } from "../../utils/utils";
+import {
+  formatDateToFrench,
+  convertTimeToDecimalHours,
+  capitalizeFirstLetter,
+} from "../../utils/utils";
 
 // TaskList Component
 export const TaskList = () => {
@@ -120,8 +125,8 @@ export const TaskList = () => {
   const handleUpdateTask = () => {
     if (title.trim() === "" || description.trim() === "") {
       toast.error("Veuillez remplir toutes les champs requis");
-      return
-    };
+      return;
+    }
     axios
       .put(`${serverUrl}/tasks/update/`, {
         title: title,
@@ -220,16 +225,20 @@ export const TaskList = () => {
       <div className="task-list-container">
         <TaskCreate refreshTasks={fetchTasks} />
 
+        {/* Liste des fonctionnalités */}
         <Text fw={600} mb={"md"} size="1.25rem">
           Liste des fonctionnalités
         </Text>
 
         <div className="flex">
-          <Text mb={"sm"} className="py-2 px-4 text-red-500 border border-red-500 rounded-md">
+          <Text
+            className="py-2 px-4 text-red-500 border border-red-500 rounded-md text-sm"
+          >
             Bordure rouge : La date d'écheance a été dépassé
           </Text>
         </div>
 
+        {/* Recherches, Filtres et Tri */}
         <div className="flex gap-4 items-center mb-6">
           <TextInput
             label="Recherche"
@@ -266,6 +275,7 @@ export const TaskList = () => {
           />
         </div>
 
+        {/* Liste des tâches */}
         <Text fw={600} mb={"md"} size="1.25rem">
           {tasks.length > 0
             ? "Liste des tâches"
@@ -277,25 +287,62 @@ export const TaskList = () => {
             <HoverCard withArrow key={index} openDelay={50} closeDelay={0}>
               <HoverCard.Target>
                 <Card
-                  className={`task-card border ${task.created_at > task.due_date ? 'border-red-500' : ''}`}
-                  shadow="sm"
+                  className={`task-card ${
+                    task.created_at > task.due_date ? "border border-red-500" : ""
+                  }`}
                   padding="md"
                   radius="md"
-                  withBorder
                   key={index}
                   style={{ cursor: "pointer" }}
                   onClick={() => handleEditClick(task)}
                 >
-                  <Group className="flex flex-col">
-                    <Text fw={500}>{task.title}</Text>
-                    <Badge color={setColor(task.status.name)}>
-                      {setStatus(task.status.name)}
-                    </Badge>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex gap-2 justify-between">
+                      <Text
+                        fw={"normal"}
+                        size="sm"
+                        className={`${
+                          task.status.name === "finished" && "line-through"
+                        } w-3/4`}
+                      >
+                        {capitalizeFirstLetter(task.title)}
+                      </Text>
 
-                    <Badge color={"red"} variant="dot">
-                      {formatDateToFrench(task.due_date)}
-                    </Badge>
-                  </Group>
+                      <Badge
+                        color={setColor(task.status.name)}
+                        className="w-1/4"
+                        title={setStatus(task.status.name)}
+                      >
+                        {setStatus(task.status.name)}
+                      </Badge>
+                    </div>
+
+                    <Text size="xs" className="text-slate-500">
+                      {capitalizeFirstLetter(task.description)}
+                    </Text>
+
+                    <div className="border-t border-gray-300 my-2 mb-4 w-full"></div>
+
+                    <div className="flex justify-between">
+                      <Text size="xs" className="text-slate-500 font-medium">
+                        {"Durée estimée (en heures)"}
+                      </Text>
+                      <Text size="xs" className="text-slate-500 font-light">
+                        {task.estimated_time}
+                      </Text>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <Text size="xs" className="text-slate-500 font-medium">
+                        {"Date d'échéance"}
+                      </Text>
+                      <Badge color={"red"} variant="dot" size="xs">
+                        <Text size="xs" className="text-slate-500 font-light">
+                          {formatDateToFrench(task.due_date)}
+                        </Text>
+                      </Badge>
+                    </div>
+                  </div>
                 </Card>
               </HoverCard.Target>
               <HoverCard.Dropdown>
@@ -403,6 +450,7 @@ export const TaskList = () => {
               precision={2}
               step={0.5}
               required
+              disabled
             />
 
             <DateInput
@@ -412,6 +460,7 @@ export const TaskList = () => {
               value={dueDate !== null && new Date(dueDate)} // This should be a Date object or null
               onChange={(value) => setDueDate(value)} // Make sure this value is being handled correctly
               required
+              disabled
             />
 
             <div className="flex gap-2">
