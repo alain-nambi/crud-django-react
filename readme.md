@@ -2,6 +2,35 @@
 Ce projet impliquerait la création d’une application simple de liste de tâches utilisant Django
 comme technologie principale.
 
+### Indications pour le lancement de l'application
+1. Créer la base de données
+```sql
+create database todo_task;
+```
+
+2. Faire un backup de la base de données
+```bash
+cd backend/
+psql -U postgres -d todo_task -f todo_task.sql
+```
+
+3. Installation des requiremntes et lancement du serveur Django
+```bash
+cd backend/
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+4. Installation des dépendances et lancement du serveur React
+```bash
+cd frontend/
+npm install
+npm run dev
+```
+
+5. Lancer l'application dans un navigateur
+Cliquer sur http://localhost:5173/
+
 ### Voici un utilisateur test
 #### User 1
 alainnambi@blueline.com
@@ -23,7 +52,7 @@ Intégration du Backend ::
 - API Django REST pour gérer les opérations CRUD pour les éléments à faire OK
 - Intégrer le front-end au backend Django OK
 Fonctionnalités supplémentaires (facultatif) ::
-- Dates d'échéance et rappels pour les tâches à accomplir (cron notification)
+- Dates d'échéance et rappels pour les tâches à accomplir (cron notification) (Pas terminé)
 Les pré-requis techniques ::
 - Utilisez Django comme framework Web pour le backend OK
 - Choisissez un framework front-end (Django, React, Vue.js) pour créer l'application
