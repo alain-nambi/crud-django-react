@@ -7,9 +7,37 @@ Les CRON se lancent tous les 08h, 10h, 13h, 15h, 17h
 
 > Utiliser une adresse email valide pour les tâches CRON notification par mail
 
+Dans tasks\views.py
+
+```python
+def cron_task_due_soon(user):
+...
+
+        try:
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email='alainnambi.work@gmail.com',
+                # Ajouter votre propre adresse mail dans la liste
+                recipient_list=['alainnambi.work@gmail.com', user.email, "test@exemple.com"],
+                fail_silently=False,
+                html_message=html_message,
+            )
+            print(f"Reminder email sent for task {task.title}")
+        except Exception as e:
+            print(f"Failed to send email for task {task.title}: {e}")
+
+...
+
+# Schedule example who runs every 10 seconds
+# Décommenter cette ligne pour faire un test
+# schedule.every(10).seconds.do(cron_job) 
+```
+
 ### Indications pour le lancement de l'application
 1. Créer la base de données
 ```sql
+psql -U postgres_user
 create database todo_task;
 ```
 

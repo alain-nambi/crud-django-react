@@ -200,3 +200,6 @@ schedule.every().day.at("07:00").do(cron_job) # 10 heures
 schedule.every().day.at("10:00").do(cron_job) # 13 heures
 schedule.every().day.at("12:00").do(cron_job) # 15 heures
 schedule.every().day.at("14:00").do(cron_job) # 17 heures
+
+# Schedule example who runs every 10 seconds
+# schedule.every(10).seconds.do(cron_job)
