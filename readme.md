@@ -2,6 +2,9 @@
 Ce projet impliquerait la création d’une application simple de liste de tâches utilisant Django
 comme technologie principale.
 
+## CRON
+Les CRON se lancent tous les 08h, 10h, 13h, 15h, 17h
+
 > Utiliser une adresse email valide pour les tâches CRON notification par mail
 
 ### Indications pour le lancement de l'application

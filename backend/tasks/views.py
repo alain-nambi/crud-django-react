@@ -195,8 +195,8 @@ def cron_job():
         cron_task_due_soon(user)
 
 # Schedule the job at specific times Madagascar time
-schedule.every().day.at("05:00").do(cron_job)
-schedule.every().day.at("08:00").do(cron_job)
-schedule.every().day.at("11:00").do(cron_job)
-schedule.every().day.at("14:00").do(cron_job)
-schedule.every().day.at("13:53").do(cron_job)
+schedule.every().day.at("05:00").do(cron_job) # 08 heures
+schedule.every().day.at("07:00").do(cron_job) # 10 heures
+schedule.every().day.at("10:00").do(cron_job) # 13 heures
+schedule.every().day.at("12:00").do(cron_job) # 15 heures
+schedule.every().day.at("14:00").do(cron_job) # 17 heures
