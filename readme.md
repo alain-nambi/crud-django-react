@@ -74,9 +74,8 @@ npm run dev
 Cliquer sur http://localhost:5173/
 
 ### Voici un utilisateur test
-#### User 1
-alainnambi@blueline.com
-alain
+email : alainnambi@gmail.com
+mot de passe : alain
 
 ### Principales caractéristiques ::
 #### Fonctionnalités ::
