@@ -7,12 +7,14 @@
 
 .task-list-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 16px;
     width: 100%;
 }
 
 .task-card {
+    max-width: 350px;
+    width: auto;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     animation: fadeIn 0.5s ease-in-out;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
