@@ -87,14 +87,14 @@ alain
 - Marquer les tâches à accomplir comme terminées OK
 - Filtrer les tâches à effectuer par statut (terminé, incomplet) OK
 Implémentation du Front-end ::
-- Application monopage OL
+- Application monopage OK
 - Rendu dynamique des tâches à accomplir sans actualisation de page (Expérience
 utilisateur fluide avec des interactions basées sur AJAX) OK
 Intégration du Backend ::
 - API Django REST pour gérer les opérations CRUD pour les éléments à faire OK
 - Intégrer le front-end au backend Django OK
 Fonctionnalités supplémentaires (facultatif) ::
-- Dates d'échéance et rappels pour les tâches à accomplir (cron notification) (Pas terminé)
+- Dates d'échéance et rappels pour les tâches à accomplir (cron notification) (OK)
 Les pré-requis techniques ::
 - Utilisez Django comme framework Web pour le backend OK
 - Choisissez un framework front-end (Django, React, Vue.js) pour créer l'application
