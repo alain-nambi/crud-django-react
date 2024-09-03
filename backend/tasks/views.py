@@ -1,13 +1,24 @@
 from datetime import datetime, timedelta
-import time
+import locale
+
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from django.db.models import Q
+
 from .models import Task, Status
+from django.contrib.auth.models import User
 from .serializers import TaskSerializer
+
+
+import schedule
+
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 @api_view(['POST'])
 def create_task(request):    
@@ -132,3 +143,60 @@ def search_task(request):
 
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)
+
+def transform_french_date(timestamp):
+    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+    date = datetime.fromisoformat(str(timestamp))
+    return date.strftime('%-d %B %Y')
+
+def cron_task_due_soon(user):
+    tasks = Task.objects.filter(
+        due_date__lte=timezone.now() + timedelta(days=1),
+        status__name__in=['ongoing', 'blocked'],
+        user_id=int(user.id)
+    )
+
+    status_dict = {
+        'ongoing': 'En cours',
+        'blocked': 'En blocage',
+        'finished': 'Terminé'
+    }
+
+    for task in tasks:
+        context = {
+            'task_title': task.title,
+            'task_description': task.description,
+            'task_status': status_dict.get(task.status.name, task.status.name),
+            'due_date': transform_french_date(task.due_date),
+            'overdue': task.due_date < timezone.now(),
+        }
+
+        html_message = render_to_string('task_reminder_email.html', context)
+        plain_message = strip_tags(html_message)
+        subject = f"Rappel de tâche: {task.title}"
+
+        try:
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email='alainnambi.work@gmail.com',
+                recipient_list=['alainnambi.work@gmail.com', user.email],
+                fail_silently=False,
+                html_message=html_message,
+            )
+            print(f"Reminder email sent for task {task.title}")
+        except Exception as e:
+            print(f"Failed to send email for task {task.title}: {e}")
+
+def cron_job():
+    # Assume you have a way to get the current user. For simplicity, this example assumes all users
+    users = [user for user in User.objects.all()]  # Adjust as needed
+    for user in users:
+        cron_task_due_soon(user)
+
+# Schedule the job at specific times Madagascar time
+schedule.every().day.at("05:00").do(cron_job)
+schedule.every().day.at("08:00").do(cron_job)
+schedule.every().day.at("11:00").do(cron_job)
+schedule.every().day.at("14:00").do(cron_job)
+schedule.every().day.at("13:53").do(cron_job)

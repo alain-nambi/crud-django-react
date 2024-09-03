@@ -2,6 +2,8 @@
 Ce projet impliquerait la création d’une application simple de liste de tâches utilisant Django
 comme technologie principale.
 
+> Utiliser une adresse email valide pour les tâches CRON notification par mail
+
 ### Indications pour le lancement de l'application
 1. Créer la base de données
 ```sql

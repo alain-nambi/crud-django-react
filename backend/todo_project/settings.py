@@ -27,6 +27,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+from tasks.schedule import Scheduler
+
+# Custom function to start the scheduler
+def start_scheduler():
+    scheduler = Scheduler()
+    scheduler.daemon = True
+    scheduler.start()
+
+# Call the start_scheduler function to initialize the scheduler
+start_scheduler()
 
 # Application definition
 
@@ -134,3 +144,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email settings for Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'alainnambi.work@gmail.com'
+EMAIL_HOST_PASSWORD = 'vzfkzfdykafbhpyp '
+

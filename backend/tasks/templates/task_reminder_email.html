@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Reminder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333333;
+        }
+        p {
+            color: #555555;
+        }
+        .task-info {
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            color: #888888;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rappel de tâche</h1>
+        <div class="task-info">
+            <p><strong>Tâche:</strong> {{ task_title }}</p>
+            <p><strong>Description:</strong> {{ task_description }}</p>
+            <p><strong>Status:</strong> {{ task_status }}</p>
+            <p><strong>Date d'écheance:</strong> {{ due_date }} </p>
+        </div>
+
+        {% if overdue %}
+            <p style="color: red;">La date d'échéance de cette tâche est dépassée. Veuillez prendre les mesures nécessaires.</p>
+        {% else %}
+            <p style="color: green;">La date d'échéance de cette tâche est proche. Veillez à la terminer dans les délais</p>
+        {% endif %}
+
+        <div class="footer">
+            <p>Il s'agit d'un message automatisé. Merci de ne pas répondre.</p>
+        </div>
+    </div>
+</body>
+</html>
