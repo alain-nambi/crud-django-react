@@ -110,7 +110,7 @@ export const TaskList = () => {
   useEffect(() => {
     updateURLParams();
     fetchTasks();
-  }, [selectedStatus, sortOrder, searchQuery]);
+  }, [selectedStatus, sortOrder]);
 
   const handleEditClick = (task) => {
     setSelectedTask(task);
@@ -177,6 +177,15 @@ export const TaskList = () => {
 
   const handleSearchTask = (e) => {
     const query = e.target.value;
+
+    const params = new URLSearchParams({
+      status: selectedStatus,
+      sort_order: sortOrder,
+      search_query: query,
+    });
+
+    window.history.replaceState(null, "", `?${params.toString()}`);
+
     setSearchQuery(query);
 
     // Clear the previous timeout
@@ -226,8 +235,12 @@ export const TaskList = () => {
         <TaskCreate refreshTasks={fetchTasks} />
 
         <div className="flex mb-4">
-          <Notification color="red" title="Bordure rouge" withCloseButton={false}>
-            Indique que la date d'écheance  pour la tâche a été dépassé
+          <Notification
+            color="red"
+            title="Bordure rouge"
+            withCloseButton={false}
+          >
+            Indique que la date d'écheance pour la tâche a été dépassé
           </Notification>
         </div>
 
@@ -286,7 +299,10 @@ export const TaskList = () => {
               <HoverCard.Target>
                 <Card
                   className={`task-card ${
-                    task.created_at > task.due_date && task.status.name !== 'finished' ? "border border-red-500" : ""
+                    task.created_at > task.due_date &&
+                    task.status.name !== "finished"
+                      ? "border border-red-500"
+                      : ""
                   }`}
                   padding="md"
                   radius="md"
